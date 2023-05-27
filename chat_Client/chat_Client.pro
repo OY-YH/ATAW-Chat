@@ -10,41 +10,39 @@ CONFIG += c++17
 
 SOURCES += \
     chatlist.cpp \
-    dlg_forget.cpp \
-    dlg_regiseter.cpp \
     frienddlg.cpp \
+    leftw.cpp \
     main.cpp \
     mainwindow.cpp \
-    page_login.cpp \
-    setnetdialog.cpp \
+    qnchatmessage.cpp \
     sql_manage.cpp \
     tcp_manage.cpp
 
 HEADERS += \
     chatlist.h \
-    dlg_forget.h \
-    dlg_regiseter.h \
     frienddlg.h \
+    leftw.h \
     mainwindow.h \
-    page_login.h \
-    setnetdialog.h \
+    qnchatmessage.h \
     sql_manage.h \
-    tcp_manage.h \
-    type.h
+    tcp_manage.h
 
 FORMS += \
     chatlist.ui \
-    dlg_forget.ui \
-    dlg_regiseter.ui \
     frienddlg.ui \
+    leftw.ui \
     mainwindow.ui \
-    page_login.ui \
-    setnetdialog.ui
+
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+include($$PWD/comapi/comapi.pri)
+include($$PWD/midw/midw.pri)
+include($$PWD/rightw/rightw.pri)
+include($$PWD/login/login.pri)
 
 RESOURCES += \
     res.qrc

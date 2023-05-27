@@ -23,6 +23,12 @@ private slots:
 signals:
     void userRegister(QString name,QString password);
     void registerok();
+//    void closeWindow();
+    void signalRegister(const QJsonValue &jsonVal);
+
+public slots:
+//    void sltCloseWnd();
+    void sltRegisterOK(const QJsonValue&);
 private:
     Ui::Dlg_regiseter *ui;
     Page_login m_dlogin;

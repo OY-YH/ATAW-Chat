@@ -22,7 +22,7 @@ Page_login::Page_login(QWidget *parent) :
 
     connect(netdlg,&setnetDialog::sendPortandAdd,this,[=](unsigned int port,QString ip,unsigned int fileport){
         sock->connectServer(ip,port);
-        filesock->connectServer(ip,fileport);
+        filesock->connectToServer(ip,fileport);
     });
 
     connect(sock,&clientSock::connectSucess,this,[=](){netdlg->close();});
@@ -143,6 +143,7 @@ void Page_login::on_bin_login_clicked()
     }*/
     QString username=ui->le_username->text();
     QString password=ui->le_password->text();
+    qDebug()<<password;
     if(""==username){
         QMessageBox::information(this,"登录","用户名不能为空");
     }else if(""==password){
@@ -153,6 +154,8 @@ void Page_login::on_bin_login_clicked()
         //封装消息
         sock->setID(username.toInt());
         QJsonObject JsonObj;
+//        JsonObj.insert("name", username);
+//        JsonObj.insert("passwd", password);
         JsonObj.insert("id",username.toInt());
         qDebug()<<"id"<<username.toInt();
         JsonObj.insert("password",password);

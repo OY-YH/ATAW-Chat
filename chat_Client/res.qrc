@@ -23,5 +23,9 @@
         <file>forget.css</file>
         <file>dlg.css</file>
         <file>网络设置.svg</file>
+        <file>res/pic/loading4.gif</file>
+        <file>res/pic/CustomerService.png</file>
+        <file>res/pic/Customer Copy.png</file>
+        <file>res/pic/沟通页_三条杠_跳转选择孩子.png</file>
     </qresource>
 </RCC>

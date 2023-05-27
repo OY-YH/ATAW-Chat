@@ -2,6 +2,7 @@
 #include "ui_setnetdialog.h"
 #include<QMessageBox>
 #include<tcp_manage.h>
+#include "myapp.h"
 
 setnetDialog::setnetDialog(QWidget *parent) :
     QDialog(parent),
@@ -31,11 +32,16 @@ void setnetDialog::on_okButton_clicked()
 //        connect(m_tcp,&clientSock::connectSucess,this,[=](){
 //            this->hide();
 //        });
+        MyApp::m_strHostAddr = ip;
+        MyApp::m_nMsgPort = port;
+        MyApp::m_nFilePort = filePort;
     }
     else
     {
         QMessageBox::warning(this,"warning","输入有空请重新输入！",QMessageBox::Ok);
     }
+
+    emit rotateWindow();
 }
 
 

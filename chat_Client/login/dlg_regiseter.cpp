@@ -3,6 +3,8 @@
 #include <QMessageBox>
 //#include "stusql.h"
 #include <QFile>
+#include <QJsonObject>
+#include <QJsonValue>
 
 Dlg_regiseter::Dlg_regiseter(QWidget *parent) :
     QDialog(parent),
@@ -40,7 +42,16 @@ void Dlg_regiseter::on_btn_register_sure_clicked()
 //    QString aut=ui->cb_auth->currentText();
 
     if(password==rePassword){
-        emit userRegister(username,password);
+        //向服务器发送注册消息
+        QJsonObject json;
+        json.insert("name",username);
+        json.insert("pwd",password);
+        emit signalRegister(json);
+
+        ui->le_reg_username->clear();
+        ui->le_reg_password->clear();
+
+//        emit userRegister(username,password);
 
 //        if(ptr->user_isExit(username)){
 //            QMessageBox::information(this,"注册","该用户已经注册过");
@@ -76,6 +87,40 @@ void Dlg_regiseter::on_btn_register_sure_clicked()
 void Dlg_regiseter::on_btn_reg_cancel_clicked()
 {
     //返回主界面
-    this->hide();
+  this->hide();
+}
+
+void Dlg_regiseter::sltRegisterOK(const QJsonValue &jsonVal)
+{
+    if(jsonVal.isObject()){
+        QJsonObject json = jsonVal.toObject();
+        int id = json.value("id").toInt();
+        QString pwd = json.value("pwd").toString();
+        QString name = json.value("name").toString();
+
+        qDebug() << "注册成功!"
+                 << " id:" << id
+                 << " name:" << name
+                 << " pwd:" << pwd;
+
+//        welcome->setText("注册成功!");
+        ui->le_reg_username->setVisible(false);
+        ui->le_reg_password->setVisible(false);
+        ui->le_reg_repassword->setVisible(false);
+
+//        nameLabel->setGeometry(80,120,250,30);
+//        nameLabel->setText(name + ",欢迎使用.");
+
+//        idLabel->setGeometry(80,170,350,30);
+//        idLabel->setVisible(true);
+//        idLabel->setText("您的id为: " + QString::number(id));
+
+//        passwordLabel->setGeometry(80,210,250,30);
+//        passwordLabel->setText("密码为: " + pwd);
+
+//        okBtn->setText("返回登陆");
+//        disconnect(okBtn,SIGNAL(clicked(bool)),this,SLOT(sltBtnClicked()));
+//        connect(okBtn,SIGNAL(clicked(bool)),this,SLOT(closeWnd()));
+    }
 }
 

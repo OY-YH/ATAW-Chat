@@ -1,6 +1,51 @@
 #ifndef TYPE_H
 #define TYPE_H
 
+/* 聊天气泡相关设置 */
+#define ITEM_START_ANGLE 270
+#define ITEM_D_ANGLE 2
+#define ITEM_D_ZOOMING_FACTOR 0.05
+#define UPDATE_TIMER_INTERVAL 10 // ms
+#define ITEM_COUNTER_TIMER_INTERVAL 200
+#define SIZE_HINT QSize(300,300)
+
+#define ITEM_HEIGHT 40
+#define BG_START_COLOR QColor(179,179,183)
+#define BG_END_COLOR QColor(187,193,207)
+
+#define ITEM_START_COLOR ITEM_END_COLOR.lighter()
+#define ITEM_END_COLOR QColor(62,135,166)
+
+#define ITEM_START_COLOR_A ITEM_END_COLOR_A.lighter()
+#define ITEM_END_COLOR_A QColor(221,221,221)
+
+#define HOVER_OPACITY 0.2
+#define HOVER_START_COLOR HOVER_END_COLOR.lighter()
+#define HOVER_END_COLOR QColor(98,139,21)
+
+#define HOVER_TEXT_COLOR Qt::red
+#define SELECT_TEXT_COLOR Qt::white
+#define NORMAL_TEXT_COLOR Qt::black
+
+#define RECT_RADIUS 4
+
+#define ITEM_SPACE          20
+#define ITEM_TITLE_HEIGHT   20
+
+typedef enum {
+    Text,           // 普通文字消息
+    Audio,          // 语音消息
+    Picture,        // 图片消息
+    Files,          // 文件传输
+    Notice          // 通知
+} MessageType;
+
+typedef enum {
+    NewFriend,           // 新朋友
+    NewMember,           // 群组新成员
+    ExitGroup,           // 群员退群
+} NoticeType;
+
 typedef enum {
     Unknow,
     Register            = 0x10,     // 用户注册

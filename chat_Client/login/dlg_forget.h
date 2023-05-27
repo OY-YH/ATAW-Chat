@@ -14,12 +14,17 @@ class Dlg_forget : public QDialog
 public:
     explicit Dlg_forget(QWidget *parent = nullptr);
     ~Dlg_forget();
+signals:
+//    void closeWindow();
+    void signalForgetPwd(const QJsonValue &jsonVal);
 
 private slots:
     void on_btn_forget_sure_clicked();
 
     void on_btn_forget_cancel_clicked();
-
+public slots:
+    void sltForgetPwdReply(const QJsonValue &);
+//    void sltCloseWnd();
 private:
     Ui::Dlg_forget *ui;
 };

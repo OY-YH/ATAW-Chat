@@ -17,6 +17,11 @@ public:
     explicit setnetDialog(QWidget *parent = nullptr);
     ~setnetDialog();
 
+    void readConfig();
+signals:
+    void rotateWindow();
+
+
 private slots:
     void on_okButton_clicked();
 
