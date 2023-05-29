@@ -1,8 +1,11 @@
 #include "tcp_manage.h"
 #include "qtcpsocket.h"
+#include "qtmetamacros.h"
+#include "sql_manage.h"
 #include "type.h"
 #include <QDataStream>
 #include <QDir>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include<QMessageBox>
@@ -16,12 +19,8 @@ clientSock::clientSock(QObject *parent)
     tcpSocket = new QTcpSocket(this);
 
     ID=-1;
-    connect(tcpSocket,&QTcpSocket::connected,this,[=](){
-        emit connectSucess();
-
-        QMessageBox::information(NULL,"sucess","连接成功！",QMessageBox::Ok);
-
-    });
+    connect(tcpSocket,&QTcpSocket::connected,this,&clientSock::sltConnected);
+    connect(tcpSocket,&QTcpSocket::disconnected,this,&clientSock::sltDisconnected);
     connect(tcpSocket,&QTcpSocket::readyRead,this,&clientSock::recvMsg);
 
 }
@@ -97,6 +96,7 @@ void clientSock::recvMsg()
             case Register:
             {
                 emit registerOk(dataVal);
+//                Q_EMIT signalRegisterOk(dataVal);
                 QJsonObject obj;
                 obj=dataVal.toObject();
                 int id=obj.value("id").toInt();
@@ -105,6 +105,23 @@ void clientSock::recvMsg()
                 QMessageBox::information(NULL,"sucess",infor,QMessageBox::Ok);
                 break;
             }
+            case UserOnLine:
+            {
+                qDebug() << "user is oline" << dataVal;
+                Q_EMIT signalMessage(UserOnLine, dataVal);
+            }
+            break;
+            case UserOffLine:
+            {
+                qDebug() << "user is offline" << dataVal;
+                Q_EMIT signalMessage(UserOffLine, dataVal);
+            }
+            break;
+            case Logout:
+            {
+                tcpSocket->abort();
+            }
+            break;
             case FindFriend:
                 emit findFrindReply(dataVal);
                 break;
@@ -114,10 +131,16 @@ void clientSock::recvMsg()
             case AddFriendRequist:
                 emit signalMessage(AddFriendRequist,dataVal);
                 break;
+            case GetOfflineMsg:
+            {
+                emit signalGetOfflineMsg(dataVal);
+                break;
             }
-
+            default:
+                break;
+            }
         }
-}
+    }
 }
 
 QString clientSock::getName()
@@ -155,7 +178,43 @@ if (dataVal.isObject()) {
 
 void clientSock::setID(int newID)
 {
-    ID = newID;
+ID = newID;
+}
+
+void clientSock::sltDisconnected()
+{
+    qDebug() << "disconnecetd to server";
+    tcpSocket->abort();
+    Q_EMIT signalStatus(DisConnectedHost);
+}
+
+void clientSock::sltConnected()
+{
+//        emit connectSucess();
+        qDebug() << "connecetd to server";
+    Q_EMIT signalStatus(ConnectedHost);
+
+    QMessageBox::information(NULL,"sucess","连接成功！",QMessageBox::Ok);
+}
+
+void clientSock::sltSendOnline()
+{
+    // 上线的时候给当前好友上报下状态
+    QJsonArray friendArr = sql_manage::Instance()->getMyFriends();
+
+    // 组织Jsonarror
+    sendMsg(UserOnLine, friendArr);
+}
+
+void clientSock::sltSendOffline()
+{
+    QJsonObject json;
+    json.insert("id", ID);
+    QJsonArray friendArr = sql_manage::Instance()->getMyFriends();
+    json.insert("friends", friendArr);
+
+    // 通知我的好友，我下线了
+    this->sendMsg(Logout, json);
 }
 
 

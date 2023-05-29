@@ -29,6 +29,12 @@ Page_Login_Logining::~Page_Login_Logining()
     delete ui;
 }
 
+void Page_Login_Logining::hideEvent(QHideEvent *)
+{
+    m_loginingTimer->stop();
+    emit hideWindow();
+}
+
 void Page_Login_Logining::changePoints()
 {
     m_points.append('.');
@@ -38,7 +44,32 @@ void Page_Login_Logining::changePoints()
     ui->lb_logining->setText(tr("Logining")+m_points);
 }
 
-void Page_Login_Logining::on_btn_cancel_clicked()
+void Page_Login_Logining::showMainUI()
+{
+    emit animationFinished();
+}
+
+void Page_Login_Logining::loginSuccess()
+{
+    m_loginingTimer->stop();
+    ui->lb_logining->setText(tr("登录成功！"));
+    //m_headLabel->updateHead();
+    QTimer::singleShot(1000,this,&Page_Login_Logining::showMainUI);
+}
+
+void Page_Login_Logining::updateHead()
+{
+    QString headPath = MyApp::m_strHeadPath + MyApp::m_strHeadFile;
+    //qDebug() << "headPath:" << headPath;
+    QFileInfo fileInfo(headPath);
+    if(!fileInfo.exists() || MyApp::m_strHeadFile.isEmpty())
+        headPath = ":/loginwnd/defalut_head";
+
+//    ui->lb_head->changeHead(headPath);
+    ui->lb_head->setText(headPath);
+}
+
+void Page_Login_Logining::on_btn_cancel_clicked(bool)
 {
     emit cancelSignal();
 }

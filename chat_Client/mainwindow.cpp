@@ -33,7 +33,8 @@ MainWindow::MainWindow(QWidget *parent)
 //        this->show();
 //    });
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
+    qDebug()<<"errorrr";
+    QHBoxLayout *layout = new QHBoxLayout(ui->centralwidget);
     leftBar = new leftw;
     midBar = new midw;
     rightBar = new rightw;
@@ -733,17 +734,17 @@ void MainWindow::sltFileRecvFinished(quint8, QString, int)
 
 }
 
-void MainWindow::on_btn_min_clicked()
-{
-    //
-    this->hide();
-}
+//void MainWindow::on_btn_min_clicked()
+//{
+//    //
+//    this->hide();
+//}
 
 
-void MainWindow::on_btn_max_clicked()
-{
+//void MainWindow::on_btn_max_clicked()
+//{
 
-}
+//}
 
 void MainWindow::onleftBtnClicked(int page)
 //void MainWindow::onleftBtnClicked(QAbstractButton* button)

@@ -2,6 +2,7 @@
 #include "addfriendwnd.h"
 #include "cell.h"
 #include "contactwidget.h"
+#include "findfriendwnd.h"
 #include "listwidget.h"
 #include "qwidget.h"
 #include "sql_manage.h"
@@ -181,6 +182,77 @@ void midw::updateTime(int id, qint64 time,QString msg)
     ui->chatList->refreshCellTime(id,time,msg);
 }
 
+void midw::onSonMenuSelected(QAction *action)
+{
+    if(!action->text().compare(tr("会话置顶"))){
+        qDebug() << "会话置顶";
+        ui->chatList->setCellToTop(popMenuCell);
+    }else if(!action->text().compare(tr("取消置顶"))){
+        qDebug() << "取消置顶";
+        ui->chatList->cancelCellOnTop(popMenuCell);
+    }else if(!action->text().compare(tr("关闭会话"))){
+        qDebug() << "关闭会话";
+        if(popMenuCell != nullptr){
+            QList<Cell*> cells = ui->chatList->getAllCells();
+            int cnt = cells.size();
+            if(cnt == 1){
+                emit openDialog(nullptr);
+            }else{
+                for(int i = 0;i < cnt;i++){
+                    if(cells.at(i) == popMenuCell){
+                        if(i != cnt-1){//不是最后一个格子，关闭该格子后打开下一个
+                            if(selectedCell != nullptr){
+                                ui->chatList->resetCellState();
+                                cells.at(i+1)->isClicked = true;
+                                ui->chatList->refreshList();
+
+                                //打开新的聊天对话框
+                                if(cells.at(i+1)->type != Cell_AddFriend &&
+                                    cells.at(i+1)->type != Cell_AddGroup){
+                                    emit openDialog(cells.at(i+1));
+                                }else{
+                                    emit resetRightPage();
+                                }
+                            }else{
+                                emit resetRightPage();
+                            }
+                        }else{//是最后一个格子，关闭该格子后打开上一个
+                            if(selectedCell != nullptr){
+                                ui->chatList->resetCellState();
+                                cells.at(i-1)->isClicked = true;
+                                ui->chatList->refreshList();
+
+                                //打开新的聊天对话框
+                                if(cells.at(i-1)->type != Cell_AddFriend &&
+                                    cells.at(i-1)->type != Cell_AddGroup){
+                                    emit openDialog(cells.at(i-1));
+                                }else{
+                                    emit resetRightPage();
+                                }
+                            }else{
+                                emit resetRightPage();
+                            }
+                        }
+                    }
+                }
+            }
+
+            ui->chatList->removeCell(popMenuCell);
+
+            int cnt2 = ui->chatList->getAllCells().size();
+            if(cnt2 == 0){
+                ui->stackedWidget->setCurrentIndex(2);
+            }
+        }
+    }else if(!action->text().compare(tr("关闭全部会话"))){
+        qDebug() << "关闭全部会话";
+        ui->chatList->removeAllCells();
+        emit openDialog(nullptr);
+
+        ui->stackedWidget->setCurrentIndex(2);
+    }
+}
+
 void midw::sltOpenDialog(Cell *c)
 {
     ui->stackedWidget->setCurrentIndex(0);//中栏切换到聊天列表
@@ -211,6 +283,41 @@ void midw::setPopMenuCell(Cell *cell, QMenu *)
 {
     qDebug() << "popMenu show on cell:" << cell->id << cell->name;
     popMenuCell = cell;
+}
+
+void midw::sltMenuSelected(QAction *action)
+{
+    qDebug() << action->text();
+    if(!action->text().compare(tr("添加好友"))){
+        FindFriendWnd *w = new FindFriendWnd(0);
+
+        connect(w,&FindFriendWnd::signalFind,this,
+                &midw::sltFind);
+        connect(this,&midw::signalFindFriendReply,
+                w,&FindFriendWnd::SltfindFrindReply);
+        connect(w,&FindFriendWnd::signalSendMessage,
+                this,&midw::signalSendMessage);
+
+        w->exec();
+    }else if(!action->text().compare(tr("添加群"))){
+        FindFriendWnd *w = new FindFriendWnd(1);
+
+        connect(w,&FindFriendWnd::signalFind,this,
+                &midw::sltFind);
+        connect(this,&midw::signalFindFriendReply,
+                w,&FindFriendWnd::SltfindFrindReply);
+        connect(w,&FindFriendWnd::signalSendMessage,
+                this,&midw::signalSendMessage);
+
+        w->exec();
+    }else if(!action->text().compare(tr("创建群"))){
+//        newGroup->exec();
+    }
+}
+
+void midw::sltFind(const QJsonValue &json)
+{
+    emit signalSendMessage(FindFriend,json);
 }
 
 void midw::sltAddFriend(Cell *cell)

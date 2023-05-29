@@ -28,14 +28,14 @@ signals:
 
 public slots:
     void changePoints();
-    void cancelButtonClicked(bool);
+//    void cancelButtonClicked(bool);
     void showMainUI();
     void loginSuccess();
 
     void updateHead();
 
 private slots:
-    void on_btn_cancel_clicked();
+    void on_btn_cancel_clicked(bool);
 
 private:
     Ui::Page_Login_Logining *ui;

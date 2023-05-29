@@ -29,7 +29,8 @@ CellViewSon::CellViewSon(QWidget *parent,Cell *c,int tag)
         newMsg->setVisible(false);
 
 //        headLabel = new RoundLabel(this,cell->iconPath);
-        headLabel = new QLabel(this,cell->iconPath);
+        headLabel = new QLabel(this);
+        headLabel->setText(cell->iconPath);
         if(tag == 0 || tag == 2) {
             headLabel->setFixedSize(40,40);
             if(tag == 0){
@@ -115,12 +116,12 @@ void CellViewSon::mouseDoubleClickEvent(QMouseEvent *e)
     return QWidget::mouseDoubleClickEvent(e);
 }
 
-void CellViewSon::enterEvent(QEvent *e)
+void CellViewSon::enterEvent(QEnterEvent *e)
 {
     entered = true;
     update();
 
-    //    return QWidget::enterEvent(e);
+        return QWidget::enterEvent(e);
 }
 
 void CellViewSon::leaveEvent(QEvent *e)

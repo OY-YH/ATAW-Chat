@@ -1,5 +1,7 @@
 #include "listwidget.h"
-//#include "global.h"
+#include "cellviewson.h"
+#include "qcolor.h"
+#include "type.h"
 
 #include <QDebug>
 #include <QPalette>
@@ -154,7 +156,8 @@ void ListWidget::refreshList()
                     this,SIGNAL(popMenuToShow(Cell *, QMenu *)));
 
             QListWidgetItem *item = new QListWidgetItem("");
-            item->setBackgroundColor(QColor(235, 234, 232));
+            item->setBackground(QColor(235,234,232));
+//            item->setBackgroundColor(QColor(235, 234, 232));
             this->addItem(item);
             this->setItemWidget(item,group);
             item->setSizeHint(group->geometry().size());
@@ -290,6 +293,45 @@ void ListWidget::refreshCellTime(int id, qint64 time,QString msg)
                 cells.at(i)->showNewMsg = true;
             refreshList();
             return;
+        }
+    }
+}
+
+void ListWidget::addSonItem(Cell *cell)
+{
+    CellViewSon *son = new CellViewSon(nullptr,cell,tag);
+
+    if(tag == 0 || tag == 2)
+        son->setGeometry(0,0,350,60);
+    else if(tag == 1)
+        son->setGeometry(0,0,200,40);
+    son->setPopMenu(cellSonMenu);
+    sonItems.append(son);
+
+    //槽连接，消息传递给上层类进行具体处理
+
+
+    connect(son,&CellViewSon::onSelected,
+            this,&ListWidget::onSonSelected);//单元格被单击选中
+    connect(son,&CellViewSon::onRightClicked,
+            this,&ListWidget::onCellRightClicked);
+    connect(son,&CellViewSon::onPopMenuToShow,
+            this,&ListWidget::popMenuToShow);
+    connect(son,&CellViewSon::onDoubleClicked,
+            this,&ListWidget::sonDoubleClicked);
+
+    QListWidgetItem *item = new QListWidgetItem("");
+    this->addItem(item);
+    this->setItemWidget(item,son);
+    item->setSizeHint(son->geometry().size());
+}
+
+void ListWidget::changeSonSelectionState(Cell *c)
+{
+    for(CellViewSon* son: sonItems){
+        if(son->cell != c){
+            son->cell->isClicked = false;
+            son->update();
         }
     }
 }

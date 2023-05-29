@@ -11,7 +11,11 @@
 #include "dlg_regiseter.h"
 #include "loginw.h"
 #include "page_login.h"
+#include "qdebug.h"
+#include "qpropertyanimation.h"
 #include "qstackedwidget.h"
+#include "qvariantanimation.h"
+#include "qwidget.h"
 #include "setnetdialog.h"
 
 RotatingStackedWidget::RotatingStackedWidget(QWidget *parent) :
@@ -55,6 +59,7 @@ void RotatingStackedWidget::initRotateWindow()
 
     // 这里宽和高都增加，是因为在旋转过程中窗口宽和高都会变化;
     this->setContentsMargins(20,100,20,100);
+    qDebug()<<loginWnd->width();
     this->setFixedSize(QSize(loginWnd->width() + 40, loginWnd->height() + 200));
 
     QTimer::singleShot(1500,this,SLOT(sltAutoLogin()));
@@ -98,8 +103,9 @@ void RotatingStackedWidget::onRotateWindow()
     // 设置旋转角度范围;
     rotateAnimation->setStartValue(0);
     rotateAnimation->setEndValue(180);
+//    connect(rotateAnimation, &QVariantAnimation::valueChanged, this, &QWidget::repaint);
     connect(rotateAnimation, SIGNAL(valueChanged(QVariant)), this, SLOT(repaint()));
-    connect(rotateAnimation, SIGNAL(finished()), this, SLOT(onRotateFinished()));
+    connect(rotateAnimation, &QPropertyAnimation::finished, this, &RotatingStackedWidget::onRotateFinished);
     // 隐藏当前窗口，通过不同角度的绘制来达到旋转的效果;
     currentWidget()->hide();
     rotateAnimation->start();

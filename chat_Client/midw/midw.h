@@ -4,6 +4,7 @@
 #include <QWidget>
 #include "addfriendwnd.h"
 #include "contactwidget.h"
+#include "findfriendwnd.h"
 
 namespace Ui {
 class midw;
@@ -49,7 +50,8 @@ public slots:
     void sltMenuSelected(QAction*);
 
     void sltFind(const QJsonValue&);
-    void sltCreateGroup(const QJsonValue &jsonVal);
+
+//    void sltCreateGroup(const QJsonValue &jsonVal);
 
     void sltAddFriend(Cell *cell);
 

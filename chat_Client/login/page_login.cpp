@@ -27,15 +27,21 @@ Page_login::Page_login(QWidget *parent) :
     //qDebug() << headPath;
     QFileInfo fileInfo(headPath);
     if(!fileInfo.exists() || MyApp::m_strHeadFile.isEmpty()){
-        headPath = ":/loginwnd/defalut_head";
+//        headPath = ":/loginwnd/defalut_head";
+        headPath=":/login.jpg";
     }
-    ui->lb_image->setText(headPath);
+    //设置图片
+    QPixmap *pix=new QPixmap(headPath);
+    QSize sz=ui->lb_image->size();
+    ui->lb_image->setPixmap(pix->scaled(sz));
+//    ui->lb_image->setText(headPath);
 //    ui->lb_image = new QLabel(this, headPath, ":/loginwnd/head_bkg_shadow", ":/loginwnd/head_bkg_highlight");
 
     connect(ui->setNetBut,&QPushButton::clicked,this,&Page_login::rotateWindow);
     //换头像
     connect(ui->le_username,&QLineEdit::textChanged,this,&Page_login::changeHead);
 
+    //return -->login
     connect(ui->le_password, &QLineEdit::returnPressed, this, &Page_login::on_bin_login_clicked);
 
 
@@ -79,9 +85,9 @@ Page_login::Page_login(QWidget *parent) :
     setStyleSheet(strQss);
 
     //设置图片
-    QPixmap *pix=new QPixmap(":/login.jpg");
-    QSize sz=ui->lb_image->size();
-    ui->lb_image->setPixmap(pix->scaled(sz));
+//    QPixmap *pix=new QPixmap(":/login.jpg");
+//    QSize sz=ui->lb_image->size();
+//    ui->lb_image->setPixmap(pix->scaled(sz));
 
     //设置图片阴影效果
     QGraphicsDropShadowEffect *shadow=new QGraphicsDropShadowEffect(this);
@@ -182,7 +188,7 @@ void Page_login::on_bin_login_clicked()
     }*/
     QString username=ui->le_username->text();
     QString password=ui->le_password->text();
-    qDebug()<<password;
+//    qDebug()<<password;
     if(""==username){
         QMessageBox::information(this,"登录","用户名不能为空");
     }else if(""==password){
@@ -200,10 +206,9 @@ void Page_login::on_bin_login_clicked()
 //        JsonObj.insert("password",password);
 //        sock->sendMsg(Login,JsonObj);
 
+
         emit loginSignal();
     }
-
-
 
 }
 
@@ -241,6 +246,16 @@ void Page_login::on_btn_forget_clicked()
     emit openForgetPasswordWnd();
 }
 
+void Page_login::checkAutoLogin()
+{
+    if(MyApp::autoLogin){
+        qDebug() << "begin to autoLogin...";
+//        myHelper::printLogFile("begin to autoLogin...");
+
+        on_bin_login_clicked();
+    }
+}
+
 
 //void Page_login::on_setNetBut_clicked()
 //{
@@ -266,15 +281,21 @@ void Page_login::changeHead()
     if(fileInfo.exists()){
         MyApp::m_strHeadFile = QString::number(text.toInt()) + ".png";
 //        ui->lb_image->changeHead(headPath);
-        ui->lb_image->setText(headPath);
+//        ui->lb_image->setText(headPath);
         //qDebug() << "update head:" << headPath;
     }else{
         MyApp::m_strHeadFile = "";
-        headPath = ":/loginwnd/defalut_head";
+//        headPath = ":/loginwnd/defalut_head";
+        headPath=":/login.jpg";
+
 //        ui->lb_image->changeHead(headPath);
-        ui->lb_image->setText(headPath);
+//        ui->lb_image->setText(headPath);
         //qDebug() << "update head:" << headPath;
     }
+    //设置图片
+    QPixmap *pix=new QPixmap(headPath);
+    QSize sz=ui->lb_image->size();
+    ui->lb_image->setPixmap(pix->scaled(sz));
 
     emit changeLoginingHead();
 }

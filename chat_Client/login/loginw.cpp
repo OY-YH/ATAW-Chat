@@ -2,6 +2,8 @@
 #include "mainwindow.h"
 #include "myapp.h"
 #include "page_login.h"
+#include "qcolor.h"
+#include "qmessagebox.h"
 #include "type.h"
 #include "rightw/bubble/bubbleinfo.h"
 #include "sql_manage.h"
@@ -13,12 +15,15 @@
 #include <QMessageBox>
 #include <QPainter>
 #include <QTimer>
+#include <qdebug.h>
 
 loginw::loginw(QWidget *parent): QStackedWidget(parent)
 {
-    this->setFixedSize(430,330);
+    this->setFixedSize(870,520);
     this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setContentsMargins(0,0,0,0);
+//    this->setBackgroundRole(QColor(255,255,255));
+    this->setStyleSheet("background-color:rgb(255,255,255);");
 
     m_notifyMsg= new QLabel(this);
     m_notifyMsg->setFixedSize(430, 20);
@@ -36,7 +41,8 @@ loginw::loginw(QWidget *parent): QStackedWidget(parent)
             this, &loginw::signalRegisterOK);
     connect(tcpSocket, &clientSock::ForgetPwdReply,
             this, &loginw::signalForgetPwdReply);
-    connect(tcpSocket, &clientSock::GetOfflineMsg,
+    //main
+    connect(tcpSocket, &clientSock::signalGetOfflineMsg,
             this,&loginw::writeOffLineMsgToDatabase);
 
     timer = new QTimer();
@@ -174,6 +180,7 @@ void loginw::sltFileRecvFinished(quint8,QString,int)
     MyApp::m_strHeadFile = QString::number(MyApp::m_nId) + ".png";
 }
 
+
 void loginw::checkAutoLogin()
 {
     loginMainPage->checkAutoLogin();
@@ -297,13 +304,15 @@ void loginw::changePage()
             //向服务器发送登陆消息，同时登陆界面切换到登录中界面
             QJsonObject json;
             tcpSocket->setID(loginMainPage->getID().toInt());
-            json.insert("id",loginMainPage->getID().toInt());
-            json.insert("passwd",loginMainPage->getPassword());
-            tcpSocket->sendMsg(Login,json);
 
+            json.insert("id",loginMainPage->getID().toInt());
+            json.insert("password",loginMainPage->getPassword());
+            tcpSocket->sendMsg(Login,json);
+            qDebug()<<"change";
             setCurrentWidget(loginingPage);
         }else{
             showNotifyMsg(tr("未连接至服务器，请检查服务器地址是否配置正确，正在尝试重新连接..."));
+            QMessageBox::information(this,"connect","未连接至服务器，请检查服务器地址是否配置正确，正在尝试重新连接...");
 
             timer->start();
         }
@@ -312,7 +321,7 @@ void loginw::changePage()
 
 void loginw::showNotifyMsg(QString msg)
 {
-    this->setFixedSize(430, 350);
+    this->setFixedSize(870, 520);
     m_notifyMsg->move(0, 330);
     m_notifyMsg->setText("  " + msg);
     m_notifyMsg->show();
@@ -320,7 +329,7 @@ void loginw::showNotifyMsg(QString msg)
 
 void loginw::hideNotifyMsg()
 {
-    this->setFixedSize(430, 330);
+    this->setFixedSize(870, 520);
     m_notifyMsg->hide();
 }
 

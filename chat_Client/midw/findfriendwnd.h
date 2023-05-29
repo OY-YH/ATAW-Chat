@@ -21,13 +21,13 @@ signals:
     void signalFind(const QJsonValue&);
     void signalSendMessage(const quint8 &, const QJsonValue &);
 public slots:
-
+    void SltfindFrindReply(const QJsonValue& );
 private slots:
     void on_searchBut_clicked();
 
     void on_addBtn_clicked();
 
-    void SltfindFrindReply(const QJsonValue& );
+
 
 private:
     Ui::FindFriendWnd *ui;

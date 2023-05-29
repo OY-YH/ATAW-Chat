@@ -7,7 +7,7 @@
 #include "cell.h"
 
 
-//#include "mybutton.h"
+#include "mybutton.h"
 //#include "roundlabel.h"
 
 class CellViewSon : public QWidget
@@ -28,7 +28,7 @@ signals:
 protected:
     void mousePressEvent(QMouseEvent *e);
     void mouseDoubleClickEvent(QMouseEvent *e);
-    void enterEvent(QEvent *event);
+    void enterEvent(QEnterEvent *event);
     void leaveEvent(QEvent *event);
     void paintEvent(QPaintEvent *);
     void focusOutEvent(QFocusEvent*);

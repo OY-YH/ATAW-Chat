@@ -7,6 +7,7 @@
 #include<QFile>
 #include<QFileInfo>
 #include<QTimer>
+#include "qtmetamacros.h"
 
 
 //发送消息套接字
@@ -27,13 +28,24 @@ public:
 signals:
     void recvFormServre(QString);
     void signalMessage(const quint8 &type, const QJsonValue &dataVal);
-    void connectSucess();
+//    void connectSucess();
     void signalStatus(const quint8 status);
     void registerOk(const QJsonValue &dataVal);
     void findFrindReply(const QJsonValue&);
     void ForgetPwdReply(const QJsonValue &dataVal);
-    void GetOfflineMsg(const QJsonValue &dataVal);
+//    void GetOfflineMsg(const QJsonValue &dataVal);
     void signalFindFriendReply(const QJsonValue &dataVal);
+    void signalGetOfflineMsg(const QJsonValue &dataVal);
+
+private slots:
+    // 与服务器断开链接
+    void sltDisconnected();
+    // 链接上服务器
+    void sltConnected();
+    // 发送上线通知
+    void sltSendOnline();
+    // 发送下线通知
+    void sltSendOffline();
 private:
     QTcpSocket *tcpSocket;
     QString name="default";

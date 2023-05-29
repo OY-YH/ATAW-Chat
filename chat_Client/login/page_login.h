@@ -55,9 +55,9 @@ signals:
 public slots:
 //    void openRegisterAccountUrl(ClickableLabel*);
 //    void openFindPasswordUrl(ClickableLabel*);
-    void autoLoginChecked(bool isChecked);
-    void loginBtnClicked();
-    void remeberPassword(bool isChecked);
+//    void autoLoginChecked(bool isChecked);
+
+//    void remeberPassword(bool isChecked);
     void checkAutoLogin();
     void changeHead();
 private:

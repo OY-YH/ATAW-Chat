@@ -10,7 +10,7 @@ public:
     explicit DefaultWindow(QWidget *parent = nullptr);
 
 protected:
-    void mousePressEvent(QMouseEvent *event);
+//    void mousePressEvent(QMouseEvent *event);
 
 signals:
 

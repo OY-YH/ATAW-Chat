@@ -10,8 +10,8 @@
 
 #include "cell.h"
 #include "qevent.h"
-//#include "cellviewdad.h"
-//#include "cellviewson.h"
+#include "cellviewdad.h"
+#include "cellviewson.h"
 
 
 class FloatingScrollBar;
@@ -46,7 +46,7 @@ signals:
 
 private:
     QList<Cell *> cells;//包含列表中所有的格子
-//    QList<CellViewSon*> sonItems;
+    QList<CellViewSon*> sonItems;
     QMenu *cellDadMenu;
     QMenu *cellSonMenu;
     Cell *rightClickedCell;

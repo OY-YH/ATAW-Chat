@@ -2,23 +2,17 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include<QFileDialog>
+//#include<QFileDialog>
 #include<QMessageBox>
-#include <QListWidgetItem>
+//#include <QListWidgetItem>
 
 #include "leftw.h"
 #include "midw/midw.h"
-#include "qabstractbutton.h"
+//#include "qabstractbutton.h"
 #include "rightw/rightw.h"
 
-#include "messagedlg.h"
-#include "midw/midw.h"
-#include "rightw/rightw.h"
 #include"tcp_manage.h"
-#include"page_login.h"
-#include "frienddlg.h"
-#include "qnchatmessage.h"
-#include"addfriendwin.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -56,9 +50,9 @@ private slots:
 
     void sltFileRecvFinished(quint8,QString,int);
 
-    void on_btn_min_clicked();
+//    void on_btn_min_clicked();
 
-    void on_btn_max_clicked();
+//    void on_btn_max_clicked();
 
     void onleftBtnClicked(int page);
 //    void onleftBtnClicked(QAbstractButton* button);
