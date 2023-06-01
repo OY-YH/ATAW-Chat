@@ -42,11 +42,13 @@ void setnetDialog::on_okButton_clicked()
     }
 
     emit rotateWindow();
+    emit setNetwork();
 }
 
 
 void setnetDialog::on_cancelButton_clicked()
 {
+    emit rotateWindow();
     this->hide();
 }
 

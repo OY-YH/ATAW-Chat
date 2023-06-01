@@ -11,6 +11,11 @@ FindFriendWnd::FindFriendWnd(int tag) :
     ui(new Ui::FindFriendWnd)
 {
     ui->setupUi(this);
+
+    if(tag == 0)
+        ui->label->setText("找好友");
+    else if(tag == 1)
+        ui->label->setText("找群");
 }
 
 FindFriendWnd::~FindFriendWnd()
@@ -50,12 +55,6 @@ void FindFriendWnd::on_searchBut_clicked()
     json.insert("id",id);
 
     emit signalFind(json);
-
-
-
-
-
-
 
 
 }

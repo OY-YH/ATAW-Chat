@@ -63,10 +63,16 @@ void Page_Login_Logining::updateHead()
     //qDebug() << "headPath:" << headPath;
     QFileInfo fileInfo(headPath);
     if(!fileInfo.exists() || MyApp::m_strHeadFile.isEmpty())
-        headPath = ":/loginwnd/defalut_head";
+//        headPath = ":/loginwnd/defalut_head";
+        headPath=":/login.jpg";
+
+    //设置图片
+    QPixmap *pix=new QPixmap(headPath);
+    QSize sz=ui->lb_head->size();
+    ui->lb_head->setPixmap(pix->scaled(sz));
 
 //    ui->lb_head->changeHead(headPath);
-    ui->lb_head->setText(headPath);
+//    ui->lb_head->setText(headPath);
 }
 
 void Page_Login_Logining::on_btn_cancel_clicked(bool)

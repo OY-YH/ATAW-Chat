@@ -20,6 +20,7 @@ public:
     void readConfig();
 signals:
     void rotateWindow();
+    void setNetwork();
 
 
 private slots:

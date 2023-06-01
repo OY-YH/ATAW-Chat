@@ -1,7 +1,7 @@
 #ifndef CHATWINDOW_H
 #define CHATWINDOW_H
 
-#include "bubble/bubblelist.h"     //气泡
+#include "rightw/bubble/bubblelist.h"     //气泡
 #include "listwidget.h"
 #include "inputwidget.h"
 #include "tcp_manage.h"
@@ -99,6 +99,10 @@ public slots:
     void sltRecvFileFinished(quint8,QString,int);
     void sltUpdateProgress(qint64 bytes,qint64 total);
     void sltFileArrived(const QJsonValue&);
+
+    //inputwindow
+    void changeColor();
+    void restoreColor();
 
 private slots:
     void on_listbtn_clicked();

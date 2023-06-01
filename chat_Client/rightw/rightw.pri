@@ -7,6 +7,7 @@ HEADERS += \
     $$PWD/bubble/bubblelist.h \
         $$PWD/bubble/radiusprogressbar.h\
     $$PWD/defaultwindow.h \
+    $$PWD/mytextedit.h \
     $$PWD/rightw.h
 
 
@@ -17,6 +18,7 @@ SOURCES += \
     $$PWD/bubble/bubblelist.cpp \
     $$PWD/bubble/radiusprogressbar.cpp\
     $$PWD/defaultwindow.cpp \
+    $$PWD/mytextedit.cpp \
     $$PWD/rightw.cpp
 
 FORMS += \

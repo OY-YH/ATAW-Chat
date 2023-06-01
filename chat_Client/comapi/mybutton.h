@@ -40,7 +40,7 @@ public:
     QString head;
 
 protected:
-    void enterEvent(QEvent *);
+    void enterEvent(QEnterEvent *);
     void leaveEvent(QEvent *);
     void paintEvent(QPaintEvent *event);
 

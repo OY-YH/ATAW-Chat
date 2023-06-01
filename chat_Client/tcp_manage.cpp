@@ -123,7 +123,7 @@ void clientSock::recvMsg()
             }
             break;
             case FindFriend:
-                emit findFrindReply(dataVal);
+                emit signalFindFriendReply(dataVal);
                 break;
             case AddFriend:
                 emit signalMessage(AddFriend,dataVal);

@@ -31,7 +31,7 @@ signals:
 //    void connectSucess();
     void signalStatus(const quint8 status);
     void registerOk(const QJsonValue &dataVal);
-    void findFrindReply(const QJsonValue&);
+//    void findFrindReply(const QJsonValue&);
     void ForgetPwdReply(const QJsonValue &dataVal);
 //    void GetOfflineMsg(const QJsonValue &dataVal);
     void signalFindFriendReply(const QJsonValue &dataVal);

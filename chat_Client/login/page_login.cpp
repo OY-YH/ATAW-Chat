@@ -300,3 +300,9 @@ void Page_login::changeHead()
     emit changeLoginingHead();
 }
 
+
+void Page_login::on_exitButton_clicked()
+{
+    exit(0);
+}
+

@@ -25,6 +25,8 @@ signals:
     void registerok();
 //    void closeWindow();
     void signalRegister(const QJsonValue &jsonVal);
+    void returnPageLogin();
+    void registSuccess();
 
 public slots:
 //    void sltCloseWnd();

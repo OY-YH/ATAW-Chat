@@ -26,30 +26,38 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     //resize(1600, 800);
+    this->setAttribute(Qt::WA_DeleteOnClose);
     this->setWindowFlags(Qt::FramelessWindowHint);
     fileInfo=nullptr;
-//    login.show();
-//    connect(&login,&Page_login::sendLoginSuccess,this,[=](){
-//        this->show();
-//    });
 
-    qDebug()<<"errorrr";
-    QHBoxLayout *layout = new QHBoxLayout(ui->centralwidget);
+
+
     leftBar = new leftw;
+//    qDebug()<<"errorrr";
     midBar = new midw;
+//    qDebug()<<"errorrr";
     rightBar = new rightw;
+//    qDebug()<<"errorrr";
+
+//    leftBar->setFixedSize(81,832);
+    midBar->setFixedSize(321,832);
+
+    QHBoxLayout *layout = new QHBoxLayout();
 
     layout->addWidget(leftBar);
     layout->addWidget(midBar);
     layout->addWidget(rightBar);
     layout->setSpacing(0);
     layout->setContentsMargins(0, 0, 0, 0);
+    ui->centralwidget->setLayout(layout);
 
 //    connect(rightBar,SIGNAL(stayOnTop(bool)),this,SLOT(stayOnTop(bool)));
     connect(rightBar,&rightw::updateMidBarTime,
             midBar,&midw::updateTime);
-    //    connect(leftBar->m_btnGroup, &QButtonGroup::buttonClicked,
-    //            this, &MainWindow::onleftBtnClicked);
+//        connect(leftBar->m_btnGroup, &QButtonGroup::buttonClicked,
+//                this, &MainWindow::onleftBtnClicked);
+//    connect(leftBar->m_btnGroup, SIGNAL(buttonClicked(int)),
+//            this, SLOT(onBtnClicked(int)));
     connect(leftBar->m_btnGroup, &QButtonGroup::idClicked,
             this, &MainWindow::onleftBtnClicked);
 
@@ -72,66 +80,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(midBar,&midw::contactBtnClicked,[&](){
         onleftBtnClicked(1);
     });
-
-
-//    settings = new SettingsWnd;
-//    settings->setVisible(false);
-
-
-    //聊天信息列表
-//    chatList *list1=new chatList();
-//    QListWidgetItem *item1=new QListWidgetItem();
-//    item1->setSizeHint(QSize(300,60));
-//    ui->listWidget_message->addItem(item1);
-//    ui->listWidget_message->setItemWidget(item1,list1);
-//    connect(&login,&Page_login::sendSokets,this,[=](clientSock *sock,clientFileSock *filesock){
-
-//        setMainSocket(sock,filesock);//设置主窗口的sockets
-
-//        // QDateTime time=QDateTime::currentDateTime();
-//        connect(m_tcp,&clientSock::recvFormServre,this,[=](QString data){
-//        QString time = QString::number(QDateTime::currentDateTime().toSecsSinceEpoch()); //时间戳
-
-//        //ui->textBrowser->append(showData);
-//        dealMessageTime(time);
-
-////        QNChatMessage* messageW = new QNChatMessage(ui->listWidget->parentWidget());
-////        QListWidgetItem* item = new QListWidgetItem(ui->listWidget);
-////        dealMessage(messageW, item, data, time, QNChatMessage::User_She);
-//    });
-
-//        connect(m_fileTcp,&clientFileSock::sendFileSucess,[=]()
-//                {
-
-//                    ui->textEdit->clear();
-//                });
-//        connect(m_fileTcp,&clientFileSock::sucessRecvfile,[=](QString data){
-//            QString time = QString::number(QDateTime::currentDateTime().toSecsSinceEpoch()); //时间戳
-//            //QDateTime time=QDateTime::currentDateTime();
-//            QString showData=data+"\t"+QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
-//            //ui->textBrowser->append(showData);
-//            dealMessageTime(time);
-
-//            QNChatMessage* messageW = new QNChatMessage(ui->listWidget->parentWidget());
-//            QListWidgetItem* item = new QListWidgetItem(ui->listWidget);
-//            dealMessage(messageW, item, showData, time, QNChatMessage::User_She);
-//            //ui->textBrowser->append(showData);
-
-//        });
-
-
-//        //添加好友信息
-//        connect(&addFriWin,&AddFriendWin::signalFind,this,[=](QJsonObject json){
-//            m_tcp->sendMsg(FindFriend,json);
-//        });
-
-//        connect(m_tcp,&clientSock::findFrindReply,&addFriWin,&AddFriendWin::SltfindFrindReply);
-
-//        connect(&addFriWin,&AddFriendWin::signalSendMessage,m_tcp,&clientSock::sendMsg);
-
-//        connect(m_tcp,&clientSock::signalMessage,this,&MainWindow::sltTcpReply);
-
-//    });
 
 
 
@@ -182,145 +130,6 @@ void MainWindow::initUI()
 }
 
 
-//void MainWindow::on_sendBut_clicked()
-//{
-//   QString msg= ui->textEdit->toPlainText();
-//   ui->textEdit->setText("");
-//   QJsonValue data=msg;
-//   //
-//   QString time = QString::number(QDateTime::currentDateTime().toSecsSinceEpoch()); //时间戳
-
-//   if(msg.isEmpty())
-//   {
-//    QMessageBox::warning(this,"warning","输入有空");
-//   }
-//   else  //发送信息或者文件
-//   {
-//   //    bool isSending = true; // 发送中
-
-//       qDebug()<<"addMessage" << msg << time << ui->listWidget->count();
-//       //if(ui->listWidget->count()%2) {
-////           if(isSending) {
-////               dealMessageTime(time);
-
-////               QNChatMessage* messageW = new QNChatMessage(ui->listWidget->parentWidget());
-////               QListWidgetItem* item = new QListWidgetItem(ui->listWidget);
-////               dealMessage(messageW, item, msg, time, QNChatMessage::User_Me);
-////           } else {
-////               bool isOver = true;
-////               for(int i = ui->listWidget->count() - 1; i > 0; i--) {
-////                   QNChatMessage* messageW = (QNChatMessage*)ui->listWidget->itemWidget(ui->listWidget->item(i));
-////                   if(messageW->text() == msg) {
-////                       isOver = false;
-////                       messageW->setTextSuccess();
-////                   }
-////               }
-////               if(isOver) {
-////                   dealMessageTime(time);
-
-////                   QNChatMessage* messageW = new QNChatMessage(ui->listWidget->parentWidget());
-////                   QListWidgetItem* item = new QListWidgetItem(ui->listWidget);
-////                   dealMessage(messageW, item, msg, time, QNChatMessage::User_She);
-////                   messageW->setTextSuccess();
-////               }
-////           }
-////       }else {
-//           if(fileInfo!=nullptr)
-//           {
-//               //发送文件
-//               qDebug()<<"sendfile";
-//               qint64 curTime = QDateTime::currentSecsSinceEpoch();//时间戳
-
-//                m_fileTcp->sendFile(fileName,curTime,SendFile);//发送文件
-
-//                delete fileInfo;
-//                fileInfo=nullptr;
-//                //QDateTime time=QDateTime::currentDateTime();
-//                QString showData=fileName+"\t"+QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
-//                //ui->textBrowser->append(showData);
-//                dealMessageTime(time);
-
-//                QNChatMessage* messageW = new QNChatMessage(ui->listWidget->parentWidget());
-//                QListWidgetItem* item = new QListWidgetItem(ui->listWidget);
-//                dealMessage(messageW, item, showData, time, QNChatMessage::User_Me);
-//                messageW->setTextSuccess();
-//           }
-//         else if(msg != "") {
-//               qDebug()<<"sendmsg";
-//               m_tcp->sendMsg(SendGroupMsg,data);
-//               dealMessageTime(time);
-
-//               QNChatMessage* messageW = new QNChatMessage(ui->listWidget->parentWidget());
-//               QListWidgetItem* item = new QListWidgetItem(ui->listWidget);
-//               dealMessage(messageW, item, msg, time, QNChatMessage::User_Me);
-//               messageW->setTextSuccess();
-
-//               ui->textEdit->clear();
-//           }
-//       }
-//           //ui->listWidget->setCurrentRow(ui->listWidget->count()-1);
-//  // }
-
-//}
-
-
-//void MainWindow::on_fileButton_clicked()
-//{
-
-//    QFileDialog dialog(this);
-//    dialog.setFileMode(QFileDialog::AnyFile);
-
-//    fileName=dialog.getOpenFileName(this,"选择要发送文件");
-//    if(!fileName.isEmpty())
-//    {
-//        fileInfo=new QFileInfo(fileName);
-//        ui->textEdit->setText(fileInfo->fileName());
-//    }
-//}
-
-
-
-
-//void MainWindow::on_btn_user_clicked()
-//{
-//  friendlg.show();
-
-//}
-
-//void MainWindow::dealMessage(QNChatMessage *messageW, QListWidgetItem *item, QString text, QString time,  QNChatMessage::User_Type type)
-//{
-//    messageW->setFixedWidth(this->width()/1.57);
-//    QSize size = messageW->fontRect(text+" ");
-//    item->setSizeHint(size);
-//    messageW->setText(text, time, size, type);
-//    ui->listWidget->setItemWidget(item, messageW);
-//}
-
-//void MainWindow::dealMessageTime(QString curMsgTime)
-//{
-//    bool isShowTime = false;
-//    if(ui->listWidget->count() > 0) {
-//        QListWidgetItem* lastItem = ui->listWidget->item(ui->listWidget->count() - 1);
-//        QNChatMessage* messageW = (QNChatMessage*)ui->listWidget->itemWidget(lastItem);
-//        int lastTime = messageW->time().toInt();
-//        int curTime = curMsgTime.toInt();
-//        qDebug() << "curTime lastTime:" << curTime - lastTime;
-//        isShowTime = ((curTime - lastTime) > 60); // 两个消息相差一分钟
-////        isShowTime = true;
-//    } else {
-//        isShowTime = true;
-//    }
-//    if(isShowTime) {
-//        QNChatMessage* messageTime = new QNChatMessage(ui->listWidget->parentWidget());
-//        QListWidgetItem* itemTime = new QListWidgetItem(ui->listWidget);
-
-//        QSize size = QSize(this->width()/2, 30);
-//        messageTime->resize(size);
-//        itemTime->setSizeHint(size);
-//        messageTime->setText(curMsgTime, curMsgTime, size, QNChatMessage::User_Time);
-//        ui->listWidget->setItemWidget(itemTime, messageTime);
-//    }
-//}
 
 
 void MainWindow::resizeEvent(QResizeEvent *event)
@@ -749,6 +558,7 @@ void MainWindow::sltFileRecvFinished(quint8, QString, int)
 void MainWindow::onleftBtnClicked(int page)
 //void MainWindow::onleftBtnClicked(QAbstractButton* button)
 {
+//    button.
     midBar->MainPageChanged(page);
 
     if(page == 0){

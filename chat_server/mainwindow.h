@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QSystemTrayIcon>
+#include <QSystemTrayIcon>      //系统托盘
 #include <QTreeWidgetItem>
 //#include<QTcpServer>
 //#include<QTcpSocket>
@@ -10,6 +10,7 @@
 #include<QTimer>
 #include<tcpServer.h>
 #include <QStandardItemModel>   //保存数据
+#include "qtmetamacros.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -44,6 +45,10 @@ private slots:
     void SltTableClicked(const QModelIndex &index);
 
     void ShowUserStatus(const QString &text);
+
+    // 系统菜单
+    void SltTrayIcoClicked(QSystemTrayIcon::ActivationReason reason);
+    void SltTrayIconMenuClicked(QAction *action);
 
 private:
     Ui::MainWindow *ui;

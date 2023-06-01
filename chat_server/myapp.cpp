@@ -179,3 +179,14 @@ void MyApp::SaveConfig()
 
     settings.sync();
 }
+
+void MyApp::createDir(QString path)
+{
+    QDir dir(path);
+    if (!dir.exists()) {
+        dir.mkdir(path);
+#ifdef Q_WS_QWS
+        QProcess::execute("sync");
+#endif
+    }
+}

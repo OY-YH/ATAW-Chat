@@ -87,7 +87,8 @@ void Dlg_regiseter::on_btn_register_sure_clicked()
 void Dlg_regiseter::on_btn_reg_cancel_clicked()
 {
     //返回主界面
-  this->hide();
+  this->close();
+  emit returnPageLogin();
 }
 
 void Dlg_regiseter::sltRegisterOK(const QJsonValue &jsonVal)
@@ -107,6 +108,7 @@ void Dlg_regiseter::sltRegisterOK(const QJsonValue &jsonVal)
         ui->le_reg_username->setVisible(false);
         ui->le_reg_password->setVisible(false);
         ui->le_reg_repassword->setVisible(false);
+        emit registSuccess();
 
 //        nameLabel->setGeometry(80,120,250,30);
 //        nameLabel->setText(name + ",欢迎使用.");

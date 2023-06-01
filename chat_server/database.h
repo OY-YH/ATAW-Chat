@@ -37,10 +37,11 @@ public:
     // 获取用户状态
     QJsonArray getAllUsers();
     QJsonObject getUserStatus(const int &id) const;
-    int getUserLineStatus(const int &id) const;
+    int getUserOnLineStatus(const int &id) const;
+
 
     // 用户校验
-//    QJsonObject checkUserLogin(const int &id, const QString &passwd);
+    QJsonObject checkUserLogin(const int &id, const QString &passwd);
     QJsonObject CheckUserLogin(const QString &name, const QString &passwd);
     // 注册用户
     int registerUser(QString name, QString pwd);

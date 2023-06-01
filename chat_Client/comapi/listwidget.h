@@ -57,7 +57,7 @@ private:
     void changeSonSelectionState(Cell*);
 
 public slots:
-//    void onDadOpenChanged(CellViewDad *dad);
+    void onDadOpenChanged(CellViewDad *dad);
     void onSonSelected(Cell *son);
     void onCellRightClicked(Cell *cell);
     //void onPopMenuShow(QMenu *menu);

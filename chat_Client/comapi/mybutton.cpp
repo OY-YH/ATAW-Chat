@@ -24,7 +24,7 @@ MyButton::MyButton(QWidget *parent,QStringList iconsList,QSize Iconsize,BtnType 
     setImage(NormalIcon);
 }
 
-void MyButton::enterEvent(QEvent *e)
+void MyButton::enterEvent(QEnterEvent *e)
 {
     if(btnType == NormalBtn){
         if(!tag){
@@ -36,7 +36,7 @@ void MyButton::enterEvent(QEvent *e)
         //setStyleSheet("border:2px solid white;border-radius:25px;");
     }
 
-    //    return QPushButton::enterEvent(e);
+        return QPushButton::enterEvent(e);
 }
 
 void MyButton::leaveEvent(QEvent *e)

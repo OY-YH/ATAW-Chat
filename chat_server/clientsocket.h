@@ -17,18 +17,15 @@ public:
     explicit ClientSocket(QObject *parent = nullptr,QTcpSocket* tcpSocket=nullptr);
 
     void closeSocket();
-    void readMsg();
-    // 消息回发
-    void sendMessage(const quint8 &type, const QJsonValue &jsonVal);
+
     int getUserID();
-    void UserLogin(QJsonValue data);
-    void parseReister(const QJsonValue &dataVal);
+
 
 signals:
     void signalConnected();
     void signalDisConnected();
 //    void sendMessagetoClient(QJsonValue data,int ID);
-    void sendMessagetoClient(const quint8 &type, const int &id, const QJsonValue &dataVal);
+    void sendMessagetoClient(const quint8 &type, const int &reveicerID, const QJsonValue &dataVal);
     void signalDownloadFile(const QJsonValue &json);
     void successLogin();
     void sendAllMsg(QJsonValue);
@@ -36,6 +33,37 @@ signals:
 public slots:
     // 消息回发
 //    void SltSendMessage(const quint8 &type, const QJsonValue &json);
+    // 消息回发
+    void sendMessage(const quint8 &type, const QJsonValue &jsonVal);
+
+private slots:
+    void sltConnected();
+    void sltDisconnected();
+    // 消息解析和抓转发处理
+
+    void readMsg();
+
+private:
+    // 消息解析和抓转发处理
+
+//    void readMsg();
+    // 消息回发
+//    void sendMessage(const quint8 &type, const QJsonValue &jsonVal);
+    void ParseGroupMessages(const QByteArray &reply);
+    void UserLogin(QJsonValue data);
+    void parseReister(const QJsonValue &dataVal);
+    void ParseUserOnline(const QJsonValue &dataVal);
+    void ParseLogout(const QJsonValue &dataVal);
+    void ParseUpdateUserHead(const QJsonValue &dataVal);
+
+    void ParseGetMyFriend(const QJsonValue &dataVal);
+    void ParseGetMyGroups(const QJsonValue &dataVal);
+
+    void parseFindFriend(const QJsonValue &dataVal);
+    void ParseAddFriend(const QJsonValue &dataVal);
+    void parseAddFriendReply(const QJsonValue &dataVal);
+
+    void parseGetOfflineMsg(const QJsonValue &dataVal);
 
 private:
     QTcpSocket *m_tcpSocket;
@@ -54,7 +82,14 @@ public:
     bool CheckUserId(const qint32 fromId,const qint32 toId);
 
     int getID() const;
-    void StartTransferFile(QString fileName);
+
+    // 文件传输完成
+    void fileTransFinished();
+
+    void startTransferFile(QString fileName,int senderID, qint64 time,int flag = 0);
+    void insertDataBase(QString filepath,QString filename);
+
+//    void StartTransferFile(QString fileName);
     void readFileMsg();
    void handleHeadmsg(QString data);
    void handleFileMsg(QByteArray dataD);
@@ -67,6 +102,15 @@ signals:
 //void headmsg(QString data);
 //void sendFileToUSer(int recvID);
 
+   void sendMessagetoClient(const quint8 &type, const int &reveicerID, const QJsonValue &dataVal);
+
+   void signalDownloadFile(const QJsonValue &json);
+
+private slots:
+   // 文件接收
+   void sltReadyRead();
+   // 发送
+   void sltUpdateClientProgress(qint64 numBytes);
 
 private:
     QTcpSocket* m_fileSocket;
@@ -76,13 +120,14 @@ private:
     quint64 bytesReceived;  //已收到数据的大小
     quint64 fileNameSize;  //文件名的大小信息
     QString fileReadName;   //存放文件名
+    QString filesavepath;       //存放文件的保存路径
     QByteArray inBlock;   //数据缓冲区
     quint64 ullRecvTotalBytes;  //数据总大小
     QFile *fileToRecv;  //要发送的文件
 
     QTcpSocket *m_tcpSocket;
 
-    /************* Receive file *******************/
+   /************* send file *******************/
     quint16 blockSize;  //存放接收到的信息大小
     QFile *fileToSend;  //要发送的文件
     quint64 ullSendTotalBytes;  //数据总大小
@@ -90,12 +135,16 @@ private:
     quint64 bytesToWrite;   //剩余数据大小
     QByteArray outBlock;  //数据缓冲区，即存放每次要发送的数据
 
+
+
     bool m_bBusy;
 
-    // 需要转发的用户id(from
+    // 需要转发的用户id(from 即发送文件的用户ID
     qint32 m_UserId;
-    // 当前用户的窗口好友的id(to
+    // 当前用户的窗口好友的id(to 即需要接收文件的用户ID
     qint32 m_WindowId;
+    qint32 tag;//标记聊天双方是私聊还是群聊，tag=0表示私聊，tag=1表示群聊
+    qint64 msgSendTime;
 
     QFile file;
     QString fileName;

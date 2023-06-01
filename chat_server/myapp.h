@@ -46,6 +46,8 @@ public:
     static void CheckDirs();
 
     static void SaveConfig();
+
+    static void createDir(QString path);
 };
 
 #endif // MYAPP_H

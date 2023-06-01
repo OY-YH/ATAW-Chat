@@ -1,5 +1,6 @@
 #include "contactwidget.h"
 #include "listwidget.h"
+#include "mybutton.h"
 #include "qbuttongroup.h"
 #include "qpushbutton.h"
 #include "ui_contactwidget.h"
@@ -24,6 +25,18 @@ ContactWidget::ContactWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
+//    QStringList tmp;
+//    tmp << ":/Icons/MainWindow/friend.png"
+//        << ":/Icons/MainWindow/friend2.png"
+//        << ":/Icons/MainWindow/friend3.png";
+//    ui->btn_friend = new MyButton(nullptr,tmp,QSize(48,48));
+
+//    tmp.clear();
+
+//    tmp << ":/Icons/MainWindow/group.png"
+//        << ":/Icons/MainWindow/group2.png"
+//        << ":/Icons/MainWindow/group3.png";
+//    ui->btn_group = new MyButton(nullptr,tmp,QSize(48,48));
 
     btnGroup = new QButtonGroup(this);
     btnGroup->addButton(ui->btn_friend, 0);

@@ -5,6 +5,7 @@
 
 #include "clientsocket.h"
 #include "database.h"
+#include "myapp.h"
 #include"type.h"
 
 TcpServer::TcpServer(QObject *parent) :
@@ -13,7 +14,7 @@ TcpServer::TcpServer(QObject *parent) :
     m_tcpServer = new QTcpServer(this);
 
     //newconnect
-    connect(m_tcpServer, SIGNAL(newConnection()), this, SLOT(SltNewConnection()));
+    connect(m_tcpServer,&QTcpServer::newConnection, this, &TcpServer::SltNewConnection);
 }
 
 TcpServer::~TcpServer()
@@ -141,10 +142,7 @@ void TcpMsgServer::SltDisConnected()
 }
 
 /**
- * @brief TcpMsgServer::SltMsgToClient
  * 消息转发控制
- * @param userId
- * @param msg
  */
 void TcpMsgServer::SltMsgToClient(const quint8 &type, const int &id, const QJsonValue &json)
 {
@@ -158,11 +156,6 @@ void TcpMsgServer::SltMsgToClient(const quint8 &type, const int &id, const QJson
     }
 }
 
-/**
- * @brief TcpMsgServer::SltTransFileToClient
- * @param userId
- * @param fileName
- */
 void TcpMsgServer::SltTransFileToClient(const int &userId, const QJsonValue &json)
 {
     // 查找要发送过去的id
@@ -236,22 +229,81 @@ void TcpFileServer::SltDisConnected()
 }
 
 /**
- * @brief TcpFileServer::SltClientDownloadFile
  * 客户端请求下载文件
  */
 void TcpFileServer::SltClientDownloadFile(const QJsonValue &json)
 {
+//    // 根据ID寻找连接的socket
+//    if (json.isObject()) {
+//        QJsonObject jsonObj = json.toObject();
+//        qint32 nId = jsonObj.value("from").toInt(); //from(me
+//        qint32 nWid = jsonObj.value("id").toInt(); //to (friend
+//        QString fileName = jsonObj.value("msg").toString();
+//        qDebug() << "get file" << jsonObj << m_clients.size();
+//        for (int i = 0; i < m_clients.size(); i++) {
+//            if (m_clients.at(i)->CheckUserId(nId, nWid))
+//            {
+//                m_clients.at(i)->startTransferFile(fileName);
+//                return;
+//            }
+//        }
+//    }
+
     // 根据ID寻找连接的socket
     if (json.isObject()) {
         QJsonObject jsonObj = json.toObject();
-        qint32 nId = jsonObj.value("from").toInt(); //from(me
-        qint32 nWid = jsonObj.value("id").toInt(); //to (friend
-        QString fileName = jsonObj.value("msg").toString();
-        qDebug() << "get file" << jsonObj << m_clients.size();
+        int tag = jsonObj.value("tag").toInt();
+
+        qint32 sendID = jsonObj.value("from").toInt();
+        qint32 recvID = jsonObj.value("to").toInt();
+        qint32 groupID = jsonObj.value("group").toInt();
+        qint64 time = jsonObj.value("time").toInt();
+        int flag = jsonObj.value("flag").toInt();
+
+        QString filename = Database::Instance()->getSentFile(sendID,recvID,time);
+
+        if(tag != -2){
+            qDebug() << recvID << "is getting file: " << filename
+                     << (tag == 1 ? "[sent from group" + QString::number(groupID) +
+                                        " by user" + QString::number(sendID) + "]"
+                                  : "[sent from user" + QString::number(sendID)) + "]";
+        }
+
+        int nId = 0;
+        int nWid = 0;
+        if(tag == 0){
+            nId = recvID;
+            nWid = sendID;
+            if(flag == -1){//用户接收离线消息文件
+                nWid = -2;
+            }
+        }else if(tag == 1){
+            nId = recvID;
+            nWid = groupID;
+            if(flag == -1){//用户接收离线消息文件
+                nWid = -2;
+            }
+        }else if(tag == -2){
+            //用户在获取头像
+            int requestID = jsonObj.value("from").toInt();
+            int targetID = jsonObj.value("who").toInt();
+
+            nId = requestID;
+            nWid = -2;
+            filename = MyApp::m_strHeadPath + QString::number(targetID) + "/" + QString::number(targetID) + ".png";
+            qDebug() << requestID << "is requesting head:" << targetID;
+        }
+
         for (int i = 0; i < m_clients.size(); i++) {
-            if (m_clients.at(i)->CheckUserId(nId, nWid))
-            {
-                m_clients.at(i)->StartTransferFile(fileName);
+            if (m_clients.at(i)->CheckUserId(nId, nWid)){
+                if(tag == 0){
+                    m_clients.at(i)->startTransferFile(filename,0,time,flag);//私发时第二个参数无效
+                }else if(tag == 1){
+                    m_clients.at(i)->startTransferFile(filename,sendID,time,flag);//群发时第二个参数表示发送者
+                }else if(tag == -2){
+                    m_clients.at(i)->startTransferFile(filename,0,0,0);//群发时第二个参数表示发送者
+                }
+
                 return;
             }
         }
@@ -269,7 +321,7 @@ void TcpFileServer::SltClientDownloadFile(const QJsonValue &json)
 
 //void TcpFileServer::newConnect()
 //{
-////    QTcpSocket* sock=sockServ->nextPendingConnection();
+//    QTcpSocket* sock=sockServ->nextPendingConnection();
 //    tcpFileSocket* filesock=new tcpFileSocket(this,sock);
 //    clnFileList.append(filesock);
 //    connect(filesock,&tcpFileSocket::sendFileToUSer,this,[=](int recvID){

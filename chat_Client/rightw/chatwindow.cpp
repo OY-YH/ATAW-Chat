@@ -2,12 +2,12 @@
 #include "qpushbutton.h"
 #include "qtextedit.h"
 #include "bubble/bubblelist.h"
+#include "rightw/mytextedit.h"
 #include "tcp_manage.h"
 #include "type.h"
 #include "ui_chatwindow.h"
 #include "searchbar.h"
 #include "myapp.h"
-//#include "global.h"
 #include "sql_manage.h"
 
 #include <QHBoxLayout>
@@ -30,16 +30,23 @@ ChatWindow::ChatWindow(QWidget *parent,Cell *c) :
     ui->setupUi(this);
     setWindowFlag(Qt::FramelessWindowHint);
 
+//    QStringList tmp;
+//    tmp << ":/Icons/MainWindow/arrow_close.png"
+//        << ":/Icons/MainWindow/arrow_close2.png"
+//        << ":/Icons/MainWindow/arrow_close.png";
+//    ui->listbtn = new MyButton(nullptr,tmp,QSize(40,30),NormalBtn);
+
     connect(ui->msgWindow,&BubbleList::signalSendMessage,
             this,&ChatWindow::signalSendMessage);
 
 
     groupList = new GroupList;
+
     //只有群聊才显示群列表
     if(cell->type == Cell_GroupChat){
         ui->namelabel->setText(cell->name);
 //        uicenterLayout->addWidget(groupList);
-        //InitGroupList();
+        InitGroupList();
     }
     else{
         ui->namelabel->setText(cell->name);
@@ -48,40 +55,15 @@ ChatWindow::ChatWindow(QWidget *parent,Cell *c) :
     }
 
 
+//    connect(ui->textEdit,&MyTextEdit::mousePressed,this,&ChatWindow::changeColor);
+//    connect(ui->textEdit,&MyTextEdit::focusOut,this,&ChatWindow::restoreColor);
 
-
-//    connect(ui->listBtn,&QPushButton::clicked,[&](){
-//        if(open){
-//            groupList->setFixedWidth(0);
-//            groupList->setVisible(false);
-//            open = !open;
-//            QStringList tmp;
-//            tmp << ":/Icons/MainWindow/arrow_open.png"
-//                << ":/Icons/MainWindow/arrow_open2.png"
-//                << ":/Icons/MainWindow/arrow_open.png";
-//            topBar->listBtn->changeIconSet(tmp);
-//            topBar->listBtn->setImage(topBar->listBtn->MoveInIcon);
-//            topBar->listBtn->setToolTip("显示群员列表");
-//        }else{
-//            groupList->setFixedWidth(200);
-//            groupList->setVisible(true);
-//            groupList->memberList->resetCellState();
-//            groupList->memberList->refreshList();
-//            open = !open;
-//            QStringList tmp;
-//            tmp << ":/Icons/MainWindow/arrow_close.png"
-//                << ":/Icons/MainWindow/arrow_close2.png"
-//                << ":/Icons/MainWindow/arrow_close.png";
-//            topBar->listBtn->changeIconSet(tmp);
-//            topBar->listBtn->setImage(topBar->listBtn->MoveInIcon);
-//            topBar->listBtn->setToolTip("关闭群员列表");
-//        }
-//    });
+    connect(ui->listbtn,&QPushButton::clicked,this,&ChatWindow::on_listbtn_clicked);
 
     connect(ui->fileButton,&QPushButton::clicked,this,&ChatWindow::sendMsg);
     connect(ui->btn_pic,&QPushButton::clicked,this,&ChatWindow::sendMsg);
     connect(ui->sendBut,&QPushButton::clicked,this,&ChatWindow::sendMsg);
-//    connect(ui->textEdit,&QTextEdit::sender,this,&ChatWindow::sendMsg);
+//    connect(ui->textEdit,&MyTextEdit::sendMsg,this,&ChatWindow::sendMsg);
 
     //tcp file transfer
     fileType = 0;
@@ -727,6 +709,30 @@ void ChatWindow::sltFileArrived(const QJsonValue &jsonVal)
             }
         }
     }
+}
+
+void ChatWindow::changeColor()
+{
+    QPalette pal(palette());
+    pal.setColor(QPalette::Window, QColor(Qt::white));
+    setAutoFillBackground(true);
+    setPalette(pal);
+
+    pal.setColor(QPalette::Window, QColor("#F0F0F0"));
+//    ui->actionBtn->setAutoFillBackground(true);
+//    actionBtn->setPalette(pal);
+
+    ui->sendBut->setAutoFillBackground(true);
+    ui->sendBut->setPalette(pal);
+
+    ui->textEdit->setStyleSheet("border: none;background-color:white;");
+}
+
+void ChatWindow::restoreColor()
+{
+    setStyleSheet("border: none;background-color:#F0F0F0;");
+    setStyleSheet("border-top:1px solid #E6E6E6");
+    ui->textEdit->setStyleSheet("border: none;background-color:#F0F0F0;");
 }
 
 void ChatWindow::sltSendFileFinished(quint8 type,QString filename)

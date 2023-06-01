@@ -4,6 +4,7 @@
 #include "qmessagebox.h"
 #include "qstatusbar.h"
 #include "qtableview.h"
+#include "tcpServer.h"
 #include "ui_mainwindow.h"
 #include "database.h"
 #include "myapp.h"
@@ -36,7 +37,10 @@ MainWindow::MainWindow(QWidget *parent)
 //    fileServer=new TcpFileSever(this);
 
 
-    ui->treeWidget->setColumnCount(1);
+//    ui->treeWidget->setColumnCount(1);
+
+    //隐藏表头
+    ui->treeWidget->setHeaderHidden(true);
 
     QStringList l;
     l<<"ATAW Server";
@@ -89,6 +93,7 @@ MainWindow::MainWindow(QWidget *parent)
     // 初始化网络
     InitNetwork();
 
+    //tool
     QStatusBar *bar=this->statusBar();
 //    QLabel *lb_ip=new QLabel(QString("本机IP：") + myHelper::GetIP());
 // 显示系统时间
@@ -121,9 +126,14 @@ void MainWindow::InitNetwork()
     bOk = fileServer->StartListen(60101);
     ui->textBrowser->append(bOk ? tr("文件服务器监听成功,端口: 60101") : tr("文件服务器监听失败"));
 
-    systemTrayIcon = new QSystemTrayIcon(this);
-    systemTrayIcon->setIcon(QIcon(":/resource/images/ic_app.png"));
+    connect(msgServer, &TcpMsgServer::signalDownloadFile, fileServer, &TcpFileServer::SltClientDownloadFile);
+    connect(msgServer, &TcpMsgServer::signalUserStatus, this, &MainWindow::ShowUserStatus);
+    connect(fileServer, &TcpFileServer::signalUserStatus, this, &MainWindow::ShowUserStatus);
 
+    systemTrayIcon = new QSystemTrayIcon(this);
+    systemTrayIcon->setIcon(QIcon(":/res/images/ic_app.png"));
+
+    //系统托盘(在应用程序图标那显示
     QMenu *m_trayMenu = new QMenu(this);
     m_trayMenu->addAction("显示主面板");
     m_trayMenu->addSeparator();
@@ -132,12 +142,8 @@ void MainWindow::InitNetwork()
     systemTrayIcon->setContextMenu(m_trayMenu);
     systemTrayIcon->show();
 
-    connect(systemTrayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this, SLOT(SltTrayIcoClicked(QSystemTrayIcon::ActivationReason)));
-    connect(m_trayMenu, SIGNAL(triggered(QAction*)), this, SLOT(SltTrayIconMenuClicked(QAction*)));
-
-    connect(msgServer, &TcpMsgServer::signalDownloadFile, fileServer, &TcpFileServer::SltClientDownloadFile);
-    connect(msgServer, &TcpMsgServer::signalUserStatus, this, &MainWindow::ShowUserStatus);
-    connect(fileServer, &TcpFileServer::signalUserStatus, this, &MainWindow::ShowUserStatus);
+    connect(systemTrayIcon, &QSystemTrayIcon::activated,this, &MainWindow::SltTrayIcoClicked);
+    connect(m_trayMenu, &QMenu::triggered, this, &MainWindow::SltTrayIconMenuClicked);
 }
 
 //void MainWindow::newConnect()
@@ -322,4 +328,36 @@ void MainWindow::SltTableClicked(const QModelIndex &index)
 void MainWindow::ShowUserStatus(const QString &text)
 {
 
+}
+
+// 托盘菜单
+void MainWindow::SltTrayIcoClicked(QSystemTrayIcon::ActivationReason reason)
+{
+    switch (reason)
+    {
+    case QSystemTrayIcon::Trigger:      //单击系统托盘
+    {
+    }
+        break;
+    case QSystemTrayIcon::DoubleClick:  //双击系统托盘
+    {
+        if (!this->isVisible())
+            this->show();
+    }
+        break;
+    default:
+        break;
+    }
+}
+
+void MainWindow::SltTrayIconMenuClicked(QAction *action)
+{
+    if ("退出" == action->text()) {
+        msgServer->CloseListen();
+        fileServer->CloseListen();
+        qApp->quit();
+    }
+    else if ("显示主面板" == action->text()) {
+        this->show();
+    }
 }

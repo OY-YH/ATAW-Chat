@@ -54,6 +54,8 @@ void RotatingStackedWidget::initRotateWindow()
 //    connect(netWorkSetWnd, &setnetDialog::closeWindow, this, &RotatingStackedWidget::close);
 //    connect(netWorkSetWnd, &setnetDialog::hideWindow, this, &RotatingStackedWidget::onHideWindow);
 
+    connect(netWorkSetWnd,&setnetDialog::setNetwork,loginWnd,&loginw::slotTimeout);
+
     this->addWidget(loginWnd);
     this->addWidget(netWorkSetWnd);
 
@@ -68,6 +70,9 @@ void RotatingStackedWidget::initRotateWindow()
     registerWnd->hide();
 //    connect(registerWnd,&Dlg_regiseter::closeWindow,
 //            this,&RotatingStackedWidget::sltCloseRegisterWnd);
+    connect(registerWnd,&Dlg_regiseter::returnPageLogin,this,[=](){this->show();});
+    connect(registerWnd,&Dlg_regiseter::registSuccess,this,[=](){this->show();});
+
     connect(registerWnd,&Dlg_regiseter::signalRegister,
             loginWnd,&loginw::sltRegister);
     connect(loginWnd,&loginw::signalRegisterOK,

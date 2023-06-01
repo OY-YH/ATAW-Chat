@@ -36,3 +36,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 
 include($$PWD/basewidget/basewidget.pri)
+
+RESOURCES += \
+    res.qrc
+

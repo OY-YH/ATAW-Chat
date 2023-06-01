@@ -336,6 +336,15 @@ void ListWidget::changeSonSelectionState(Cell *c)
     }
 }
 
+void ListWidget::onDadOpenChanged(CellViewDad *dad)
+{
+    int cnt = dad->cell->childs.size();
+    for(int i = 0;i < cnt;i++){
+        dad->cell->childs.at(i)->isClicked = false;
+    }
+    refreshList();
+}
+
 
 void ListWidget::enterEvent(QEnterEvent *e)
 {

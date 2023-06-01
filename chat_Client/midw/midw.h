@@ -38,7 +38,7 @@ signals:
     void contactBtnClicked();
 
 private slots:
-//    void on_btn_add_clicked(Cell *cell);
+
 
 public slots:
     void updateTime(int,qint64,QString);
@@ -63,6 +63,7 @@ private:
     Cell *popMenuCell = nullptr;
     Cell *selectedCell = nullptr;//选中的格子，即如果右边有对话框时，对应中间的格子就是这个,初始化时没有被选中的
 
+    QMenu *addMenu;
 };
 
 #endif // MIDW_H

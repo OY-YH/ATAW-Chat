@@ -1,5 +1,14 @@
 #ifndef TYPE_H
 #define TYPE_H
+
+typedef enum {
+    Text,           // 普通文字消息
+    Audio,          // 语音消息
+    Picture,        // 图片消息
+    Files,          // 文件传输
+    Notice          // 通知
+} MessageType;
+
 typedef enum {
     Unknow,
     Register            = 0x10,     // 用户注册

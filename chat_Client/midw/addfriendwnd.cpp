@@ -13,8 +13,8 @@ addFriendWnd::addFriendWnd(Cell *cell) :
 
     this->cell = cell;
 
-    ui->idLabel->setText(QString::number(this->cell->id));
-    ui->userName->setText(this->cell->name);
+    ui->idLabel->setText(QString::number(cell->id));
+    ui->userName->setText(cell->name);
 
     if(cell->type == Cell_AddFriend)
         setWindowTitle("申请添加好友");

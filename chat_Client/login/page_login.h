@@ -34,6 +34,8 @@ private slots:
 
 //    void on_setNetBut_clicked();
 
+    void on_exitButton_clicked();
+
 signals:
     void loginSignal();
     void closeWindow();
