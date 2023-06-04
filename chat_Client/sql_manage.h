@@ -29,13 +29,17 @@ public:
     }
     explicit sql_manage(QObject *parent = nullptr);
     ~sql_manage();
-    bool openUserdb();
+    bool openUserdb(const QString &dataName);
 
     bool UserdbIsOpen();
 
 
-    void addFriend(int id,int userid,QString name);
-    void deleFriend(int id,int userid);
+//    void addFriend(int id,int userid,QString name);
+    // 添加好友
+    void addFriend(const int &myID, const int &friendID);
+
+    bool deleFriend(int id,int friendID);
+
     bool isMyFriend(int friendId);
     bool isInGroup(int friendID);
     // 判断是否是一个群的群主
@@ -43,6 +47,9 @@ public:
 
     // 获取好友信息
     QJsonObject getFriendInfo(int id) const;
+    // 获取群信息
+    QJsonObject getGroupInfo(int id) const;
+
     // 获取我的分组
     QJsonArray getMySubgroup() const;
     // 获取我的好友

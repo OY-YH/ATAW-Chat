@@ -18,8 +18,8 @@ public:
     explicit clientSock(QObject *parent = nullptr);
 
    void connectServer(const QString &host, const int &port);
-   void sendMsg(const quint8 &type, const QJsonValue &dataVal);
-   void  recvMsg();
+
+
    QString getName();
    void parseLogin(const QJsonValue &dataVal);//解析登陆返回信息
 
@@ -31,21 +31,26 @@ signals:
 //    void connectSucess();
     void signalStatus(const quint8 status);
     void registerOk(const QJsonValue &dataVal);
-//    void findFrindReply(const QJsonValue&);
+    void findFrindReply(const QJsonValue&);
     void ForgetPwdReply(const QJsonValue &dataVal);
 //    void GetOfflineMsg(const QJsonValue &dataVal);
     void signalFindFriendReply(const QJsonValue &dataVal);
     void signalGetOfflineMsg(const QJsonValue &dataVal);
 
+public slots:
+    void sendMsg(const quint8 &type, const QJsonValue &dataVal);
+    // 发送上线通知
+    void sltSendOnline();
+    // 发送下线通知
+    void sltSendOffline();
 private slots:
     // 与服务器断开链接
     void sltDisconnected();
     // 链接上服务器
     void sltConnected();
-    // 发送上线通知
-    void sltSendOnline();
-    // 发送下线通知
-    void sltSendOffline();
+    // tcp消息处理
+    void  recvMsg();
+
 private:
     QTcpSocket *tcpSocket;
     QString name="default";
@@ -77,14 +82,15 @@ public:
    // 发送文件大小等信息
    void sendFile(QString filePath,qint64 time,quint8 type);
 
-   void recvFile();
-
    // 文件传输完成
    void finishSendFile();
 
+   // 设置当前socket的id
+   void setUserId(const int &id);
+
 signals:
-   void sucessRecvfile(QString recvFileName);
-   void sendFileSucess(QString fileName);
+//   void sucessRecvfile(QString recvFileName);
+//   void sendFileSucess(QString fileName);
 
    void signalSendFinished(quint8,QString);
    void signalFileRecvOk(const quint8 &type, const QString &filePath,int senderID);
@@ -97,7 +103,19 @@ private slots:
    // 发送文件数据，更新进度条
    void sltUpdateClientProgress(qint64);
 
+   // 文件接收
+   void recvFile();
+   // 链接上服务器
+   void sltConnected();
+   // 与服务器断开链接
+   void sltDisConnected();
+
 private:
+    // socket 初始化
+    void initSocket();
+
+private:
+    // 通信类
     QTcpSocket *fileSocket;
     int ID;
 

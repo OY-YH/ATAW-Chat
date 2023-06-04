@@ -27,6 +27,7 @@ public:
     void stopLoadingAnimation();
 
     void allowSendMsg(int id);
+    void msgconfirmed(QJsonValue dataVal);//这是服务器回的确认收到本机发出去的消息
     void msgReceived(Cell *c,QJsonValue dataVal);//这是服务器转发给我的消息，是我的好友或者群发给我的消息
 
     void addNewUserToGroupList(int groupID,Cell *newUser);//新用户入群

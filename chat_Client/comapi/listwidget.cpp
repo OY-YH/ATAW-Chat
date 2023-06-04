@@ -1,4 +1,5 @@
 #include "listwidget.h"
+#include "cellviewdad.h"
 #include "cellviewson.h"
 #include "qcolor.h"
 #include "type.h"
@@ -150,10 +151,10 @@ void ListWidget::refreshList()
             group->setCell(cell);//cell中封装的是数据，CellView负责显示，此处是把数据传递给界面显示
             group->setPopMenu(cellDadMenu);
 
-            connect(group,SIGNAL(onOpenStatusChanged(CellViewDad *)),
-                    this,SLOT(onDadOpenChanged(CellViewDad *)));
-            connect(group,SIGNAL(onPopMenuToShow(Cell *, QMenu *)),
-                    this,SIGNAL(popMenuToShow(Cell *, QMenu *)));
+            connect(group,&CellViewDad::onOpenStatusChanged,
+                    this,&ListWidget::onDadOpenChanged);
+            connect(group,&CellViewDad::onPopMenuToShow,
+                    this,&ListWidget::popMenuToShow);
 
             QListWidgetItem *item = new QListWidgetItem("");
             item->setBackground(QColor(235,234,232));
@@ -302,7 +303,8 @@ void ListWidget::addSonItem(Cell *cell)
     CellViewSon *son = new CellViewSon(nullptr,cell,tag);
 
     if(tag == 0 || tag == 2)
-        son->setGeometry(0,0,350,60);
+//        son->setGeometry(0,0,350,60);
+        son->setGeometry(0,0,321,60);
     else if(tag == 1)
         son->setGeometry(0,0,200,40);
     son->setPopMenu(cellSonMenu);

@@ -104,6 +104,22 @@ void rightw::allowSendMsg(int id)
     }
 }
 
+void rightw::msgconfirmed(QJsonValue dataVal)
+{
+    if(dataVal.isObject()){
+        QJsonObject json = dataVal.toObject();
+        int reveiverID = json.value("to").toInt();
+        qint64 time = json.value("time").toInt();
+        for(int i = 0;i < chatWindowList.size();i++){
+            if(chatWindowList.at(i)->getID() == reveiverID){//找到了该条消息对应的聊天窗口
+                //消除动画
+                chatWindowList.at(i)->msgconfirmed(time);
+                return;
+            }
+        }
+    }
+}
+
 void rightw::msgReceived(Cell *c, QJsonValue dataVal)
 {
     for(int i = 0;i < chatWindowList.size();i++){
@@ -116,11 +132,11 @@ void rightw::msgReceived(Cell *c, QJsonValue dataVal)
     //证明没有打开与该用户的聊天框
     ChatWindow *newWindow = new ChatWindow(nullptr,c);
 
-    //ChatWindow的消息借用RightBar中转，最后传递给MainUI，因为发送消息的tcpsocket在MainUI类中
-    connect(newWindow,SIGNAL(signalSendMessage(const quint8 &, const QJsonValue &)),
-            this,SIGNAL(signalSendMessage(const quint8 &, const QJsonValue &)));
-    connect(newWindow,SIGNAL(updateMidBarTime(int,qint64,QString)),
-            this,SIGNAL(updateMidBarTime(int,qint64,QString)));
+    //ChatWindow的消息借用RightBar中转，最后传递给MainUI，因为发送消息的tcpsocket在MainWindow类中
+    connect(newWindow,&ChatWindow::signalSendMessage,
+            this,&rightw::signalSendMessage);
+    connect(newWindow,&ChatWindow::updateMidBarTime,
+            this,&rightw::updateMidBarTime);
 
     if(c->type == Cell_FriendChat)
         newWindow->setTag(0);
@@ -138,6 +154,8 @@ void rightw::msgReceived(Cell *c, QJsonValue dataVal)
     this->startLoadingAnimation();
     newWindow->loadMsgFromDatabase();
     this->stopLoadingAnimation();
+
+    qDebug()<<"loadMsgFromDataBase";
 
     newWindow->msgReceived(dataVal);//聊天窗口添加一条消息
 }

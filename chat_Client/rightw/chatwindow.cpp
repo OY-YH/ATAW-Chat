@@ -386,6 +386,13 @@ void ChatWindow::msgReceived(QJsonValue &value)
     }
 }
 
+
+
+void ChatWindow::msgconfirmed(qint64 time)
+{
+    ui->msgWindow->msgConfirmed(time);
+}
+
 void ChatWindow::writeMsgToDatabase(BubbleInfo *info)
 {
     if(!info->showError){

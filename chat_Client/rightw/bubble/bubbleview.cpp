@@ -5,6 +5,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QFileInfo>
+#include "rightw/bubble/bubbleinfo.h"
 
 BubbleView::BubbleView(QWidget *parent,BubbleInfo *info)
     : QWidget(parent),info(info)
@@ -13,9 +14,9 @@ BubbleView::BubbleView(QWidget *parent,BubbleInfo *info)
     sysMsgFont = QFont("Microsoft YaHei", 9, 50, false);
     setFont(textFont);
 
-    connect(info,SIGNAL(updateProgressBar(qint64,qint64)),
-            this,SLOT(slotupdateProgressBar(qint64,qint64)));
-    connect(info,SIGNAL(updatePopMenu()),this,SLOT(sltUpdatePopMenu()));
+    connect(info,&BubbleInfo::updateProgressBar,
+            this,&BubbleView::slotupdateProgressBar);
+    connect(info,&BubbleInfo::updatePopMenu,this,&BubbleView::sltUpdatePopMenu);
 
     if(info->sender != System){
         QStringList tmp;

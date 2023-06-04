@@ -60,6 +60,8 @@ public:
     void allowSendMsg();
     void addSystemMsg(QString msg);
     void msgReceived(QJsonValue &value);//接收服务器转发过来的消息，并在界面上显示出来
+
+    void msgconfirmed(qint64 time);
     void writeMsgToDatabase(BubbleInfo*);//把消息写入本地数据库
     void loadMsgFromDatabase();//从数据库中加载聊天记录
     void startLoadingAnimation();

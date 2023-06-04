@@ -4,6 +4,7 @@
 #include "page_login.h"
 #include "qcolor.h"
 #include "qmessagebox.h"
+#include "tcp_manage.h"
 #include "type.h"
 #include "rightw/bubble/bubbleinfo.h"
 #include "sql_manage.h"
@@ -234,6 +235,7 @@ void loginw::writeOffLineMsgToDatabase(const QJsonValue &dataVal)
                 info->msgType = Text;
             }else if(type == SendFile){
                 info->msgType = Files;
+                qDebug()<<"GetFile";
             }else if(type == SendPicture){
                 info->msgType = Picture;
                 //需要主动接收图片
@@ -246,6 +248,7 @@ void loginw::writeOffLineMsgToDatabase(const QJsonValue &dataVal)
                 json.insert("flag",-1);//表示该文件由gloabalFileSocket接收，不是由聊天窗口的fileSocket接收
 
                 tcpSocket->sendMsg(GetFile,json);//向服务器发送消息获取图片文件
+                qDebug()<<"GetPicture";
                 info->downloaded = true;
                 info->msg = MyApp::m_strRecvPath + info->msg;//记录图片地址
             }else{
@@ -336,8 +339,8 @@ void loginw::hideNotifyMsg()
 void loginw::showMainUI()
 {
     MainWindow *mainUI = new MainWindow;
-    disconnect(globalFileSocket,SIGNAL(signalFileRecvOk(quint8,QString,int)),
-               this,SLOT(sltFileRecvFinished(quint8,QString,int)));
+    disconnect(globalFileSocket,&clientFileSock::signalFileRecvOk,
+               this,&loginw::sltFileRecvFinished);
     mainUI->setMainSocket(tcpSocket,globalFileSocket);
 
     qDebug() << "login success! close Login Window..."

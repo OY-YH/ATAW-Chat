@@ -41,16 +41,28 @@ void  clientSock:: sendMsg(const quint8 &type, const QJsonValue &dataVal)
 //        {
 //            qDebug()<<"发送失败！";
 //        }
-        //创建json对象
-        QJsonObject json;
-        json.insert("from",ID);
-        json.insert("type",type);
-        json.insert("data",dataVal);
+    // 连接服务器
+    if (!tcpSocket->isOpen()) {
+        tcpSocket->connectToHost(MyApp::m_strHostAddr, quint16(MyApp::m_nMsgPort));
+        tcpSocket->waitForConnected(1000);
+    }
 
-        //创建json文档
-        QJsonDocument document;
-        document.setObject(json);
-        tcpSocket->write(document.toJson(QJsonDocument::Indented));
+    // 超时1s后还是连接不上，直接返回
+    if (!tcpSocket->isOpen())
+        return;
+
+    //创建json对象
+    QJsonObject json;
+    json.insert("from",ID);
+    json.insert("type",type);
+    json.insert("data",dataVal);
+
+    //创建json文档
+    QJsonDocument document;
+    document.setObject(json);
+    tcpSocket->write(document.toJson(QJsonDocument::Indented));
+
+    qDebug() << "-> 向服务器发送一条消息，消息内容为：" << json;
 
 
 }
@@ -79,15 +91,32 @@ void clientSock::recvMsg()
             switch (msgType) {
             case SendMsg://私聊消息
             {
-                emit recvFormServre(dataVal.toString());
+//                emit recvFormServre(dataVal.toString());
+                Q_EMIT signalMessage(SendMsg, dataVal);
                 qDebug()<<"私聊";
                 break;
             }
             case SendFile:
+            {
+                Q_EMIT signalMessage(SendFile, dataVal);
+                qDebug()<<"sendfile";
+            }
+            break;
             case SendGroupMsg:
             {
 
             }
+            case SendPicture:
+            {
+                Q_EMIT signalMessage(SendPicture, dataVal);
+            }
+            break;
+            case MsgReceived:
+            {
+                Q_EMIT signalMessage(MsgReceived, dataVal);
+                qDebug()<<"msgrecived";
+            }
+            break;
             case Login:
             {
                 parseLogin(dataVal);
@@ -97,12 +126,12 @@ void clientSock::recvMsg()
             {
                 emit registerOk(dataVal);
 //                Q_EMIT signalRegisterOk(dataVal);
-                QJsonObject obj;
-                obj=dataVal.toObject();
-                int id=obj.value("id").toInt();
-                QString infor=QString("连接成功！\n 你的ID是：%1").arg(id);
-                qDebug()<<infor;
-                QMessageBox::information(NULL,"sucess",infor,QMessageBox::Ok);
+//                QJsonObject obj;
+//                obj=dataVal.toObject();
+//                int id=obj.value("id").toInt();
+//                QString infor=QString("连接成功！\n 你的ID是：%1").arg(id);
+//                qDebug()<<infor;
+//                QMessageBox::information(NULL,"sucess",infor,QMessageBox::Ok);
                 break;
             }
             case UserOnLine:
@@ -227,46 +256,14 @@ void clientSock::sltSendOffline()
 clientFileSock::clientFileSock(QObject *parent)
     : QObject{parent}
 {
-//初始化套接字
-    fileSocket=new QTcpSocket(this);
-    ID=-1;
-    // 将整个大的文件分成很多小的部分进行发送，每部分为50字节
-    loadSize            = 50 * 1024;
-    ullSendTotalBytes   = 0;
-    ullRecvTotalBytes   = 0;
-    bytesWritten        = 0;
-    bytesToWrite        = 0;
-    bytesReceived       = 0;
 
-    fileToSend = new QFile(this);
-    fileToRecv = new QFile(this);
+    m_type = Login;
+
+    strFilePath = MyApp::m_strRecvPath;
+
+    initSocket();
 
 
-
-
-    connect(fileSocket,&QTcpSocket::connected,this,[=](){
-        qDebug()<<"文件套接字连接成功";
-    });
-    connect(fileSocket,&QTcpSocket::readyRead,this,&clientFileSock::recvFile);
-
-//    connect(&timer,&QTimer::timeout,this,[=](){
-//        timer.stop();
-//        int len;
-//        do{
-//            char buf[4*1024]={0};
-//            len=0;
-//            len=file.read(buf,sizeof(buf));
-//            fileSocket->write(buf,len);
-//            sendSize+=len;
-//        }while(len>0);
-//        if(sendSize==fileSize)
-//        {
-//            qDebug()<<"文件发送成功";
-//            file.close();
-//            emit sendFileSucess(fileName);
-//        }
-
-    //    });
 }
 
 void clientFileSock::connectToServer(const QString &ip, const int &port, const int &userId)
@@ -280,8 +277,7 @@ void clientFileSock::connectToServer(const QString &ip, const int &port, const i
 void clientFileSock::closeConnection()
 {
     // 还原变量
-//    fileTransFinished();
-
+    finishSendFile();
     // 主动断开
     fileSocket->abort();
 }
@@ -349,6 +345,8 @@ void clientFileSock::sendFile(QString fileName,qint64 time, quint8 type)
 void clientFileSock::recvFile()
 {
    QDataStream in(fileSocket);
+   in.setVersion(QDataStream::Qt_6_4);
+
    // 如果接收到的数据小于等于32个字节，那么是刚开始接收数据，我们保存为头文件信息
    if (bytesReceived <= (sizeof(qint64)*5))
    {
@@ -367,15 +365,15 @@ void clientFileSock::recvFile()
             in >> fileReadName;
             qDebug() << "fileReadName:" << fileReadName;
 
-//            if(ID == -2){
-//                if(flag == -1){
-//                    fileReadName = MyApp::m_strRecvPath + fileReadName;
-//                }else{
-//                    fileReadName = MyApp::m_strHeadPath + fileReadName;
-//                }
-//            }else{
-//                fileReadName = MyApp::m_strRecvPath + fileReadName;
-//            }
+            if(ID == -2){
+                if(flag == -1){
+                    fileReadName = MyApp::m_strRecvPath + fileReadName;
+                }else{
+                    fileReadName = MyApp::m_strHeadPath + fileReadName;
+                }
+            }else{
+                fileReadName = MyApp::m_strRecvPath + fileReadName;
+            }
 
             bytesReceived += fileNameSize;
 
@@ -386,28 +384,28 @@ void clientFileSock::recvFile()
                 return;
             }
 
-//            qDebug() << "Begin to recv file" << fileReadName << "sent by:"
-//                     << (senderID == 0 ? QString::number(wiID)
-//                                       : QString::number(senderID) + " in group " + QString::number(winID));
+            qDebug() << "Begin to recv file" << fileReadName << "sent by:"
+                     << (senderID == 0 ? QString::number(ID)
+                                       : QString::number(senderID) + " in group " + QString::number(ID));
 //            myHelper::printLogFile("Begin to recv file" + fileReadName + "sent by:" +
-//                                   (senderID == 0 ? QString::number(winID)
-//                                                  : QString::number(senderID) + " in group " + QString::number(winID)));
+//                                   (senderID == 0 ? QString::number(ID)
+//                                                  : QString::number(senderID) + " in group " + QString::number(ID)));
 
             QFileInfo fileinfo(fileReadName);
             if(fileinfo.suffix().toLower() == "png" || fileinfo.suffix().toLower() == "jpg"){//证明收到的是图片
                 //emit signalFileArrived(Picture,winID);//通知聊天窗口在聊天界面插入一个气泡
             }else{
 
-//                QJsonObject json;
-//                json.insert("tag",tag);
-//                json.insert("type",Files);
-//                json.insert("from",senderID);
-//                json.insert("winID",winID);//senderID != 0表示是群聊,需要再把群id写入
-//                json.insert("time",RecvFileSendTime);
+                QJsonObject json;
+                json.insert("tag",tag);
+                json.insert("type",Files);
+                json.insert("from",senderID);
+                json.insert("winID",ID);//senderID != 0表示是群聊,需要再把群id写入
+                json.insert("time",RecvFileSendTime);
 
-//                if(winID != -2)
-//                    emit signalFileArrived(json);//更新聊天窗口相应气泡框的进度条
-//            }
+                if(ID != -2)
+                    emit signalFileArrived(json);//更新聊天窗口相应气泡框的进度条
+            }
         }
    }
 
@@ -425,10 +423,10 @@ void clientFileSock::recvFile()
 
    // 更新进度条
    QFileInfo fileinfo(fileReadName);
-//   if(fileinfo.suffix().toLower() != "png" && fileinfo.suffix().toLower() != "jpg" && tag != -2){
-//        //注意收到图片是不需要更新进度条的
-//        if(winID != -2)
-//            Q_EMIT signalUpdateProgress(bytesReceived, ullRecvTotalBytes);
+   if(fileinfo.suffix().toLower() != "png" && fileinfo.suffix().toLower() != "jpg" && tag != -2){
+        //注意收到图片是不需要更新进度条的
+        if(ID != -2)
+            Q_EMIT signalUpdateProgress(bytesReceived, ullRecvTotalBytes);
    }
 
    // 接收数据完成时
@@ -440,19 +438,42 @@ void clientFileSock::recvFile()
         fileNameSize = 0;
 
         QFileInfo fileinfo(fileReadName);
-//        if(fileinfo.suffix().toLower() == "png" || fileinfo.suffix().toLower() == "jpg"){//证明收到的是图片
-//            if(winID != -2)
-//                Q_EMIT signalFileRecvOk(Picture, fileToRecv->fileName(), tag == 0?0:int(senderID));
-//        }else{
-//            if(winID != -2)
-//                Q_EMIT signalFileRecvOk(Files, fileToRecv->fileName(), tag == 0?0:int(senderID));
-//        }
+        if(fileinfo.suffix().toLower() == "png" || fileinfo.suffix().toLower() == "jpg"){//证明收到的是图片
+            if(ID != -2)
+                Q_EMIT signalFileRecvOk(Picture, fileToRecv->fileName(), tag == 0?0:int(senderID));
+        }else{
+            if(ID != -2)
+                Q_EMIT signalFileRecvOk(Files, fileToRecv->fileName(), tag == 0?0:int(senderID));
+        }
         qDebug() << "File recv success!" << fileToRecv->fileName();
 
         // 数据接受完成
         finishSendFile();
    }
 
+}
+
+void clientFileSock::sltConnected()
+{
+   m_type = Login;
+
+   QDataStream sendOut(&outBlock, QIODevice::WriteOnly);
+   sendOut.setVersion(QDataStream::Qt_6_4);
+
+   // 给服务器socket上报自己的id和聊天窗口中对方的ID，方便下次查询
+   sendOut << qint32(MyApp::m_nId) << qint32(ID) << qint32(tag);
+
+   // 发送完头数据后剩余数据的大小
+   fileSocket->write(outBlock);
+
+   // 发送连接上的信号
+   Q_EMIT signalConnectd();
+}
+
+void clientFileSock::sltDisConnected()
+{
+   if (fileSocket->isOpen())
+        fileSocket->close();
 }
 
 void clientFileSock::finishSendFile()
@@ -468,6 +489,11 @@ void clientFileSock::finishSendFile()
 
    fileNameSize        = 0;
    qDebug() << "file transfer finished!";
+}
+
+void clientFileSock::setUserId(const int &id)
+{
+   ID=id;
 }
 
 void clientFileSock::sltUpdateClientProgress(qint64 numBytes)
@@ -514,4 +540,30 @@ void clientFileSock::sltUpdateClientProgress(qint64 numBytes)
 
         finishSendFile();
    }
+}
+
+void clientFileSock::initSocket()
+{
+   // 将整个大的文件分成很多小的部分进行发送，每部分为50字节
+   loadSize            = 50 * 1024;
+   ullSendTotalBytes   = 0;
+   ullRecvTotalBytes   = 0;
+   bytesWritten        = 0;
+   bytesToWrite        = 0;
+   bytesReceived       = 0;
+
+   ID            = -1;
+
+   fileNameSize        = 0;
+   busy = false;
+
+   fileToSend = new QFile(this);
+   fileToRecv = new QFile(this);
+
+   fileSocket = new QTcpSocket(this);
+
+   // 当有数据接收成功时，我们更新进度条
+   connect(fileSocket, &QTcpSocket::readyRead, this, &clientFileSock::recvFile);
+   connect(fileSocket, &QTcpSocket::connected, this,&clientFileSock::sltConnected);
+   connect(fileSocket, &QTcpSocket::disconnected, this, &clientFileSock::sltDisConnected);
 }

@@ -31,10 +31,10 @@ sql_manage::~sql_manage()
 
 }
 
-bool sql_manage::openUserdb()
+bool sql_manage::openUserdb(const QString &dataName)
 {
     userdb=QSqlDatabase::addDatabase("QSQLITE");
-    userdb.setDatabaseName("user.db");
+    userdb.setDatabaseName(dataName);
     if (!userdb.open()) {
         qDebug() << userdb.lastError();
         return false;
@@ -72,71 +72,86 @@ bool sql_manage::UserdbIsOpen()
 {
     return userdb.isOpen();
 }
+
 //添加好友
-void sql_manage::addFriend(int id, int userid, QString name)
+void sql_manage::addFriend(const int &myID, const int &friendID)
 {
-    QSqlQuery query(userdb);
+    QString strQuery = "SELECT * FROM MyFriend ";
+    strQuery.append("WHERE id=");
+    strQuery.append(QString::number(friendID));
+
+//    QSqlQuery query(userdb);
     //查找是否有该好友
-   QString sqlSelect=QString("select * from friend where id=%1 and userId=%2").arg(id).arg(userid);
+//   QString sqlSelect=QString("select * from friend where id=%1 and userId=%2").arg(id).arg(userid);
 
-   if(!query.exec(sqlSelect))
-    {   qDebug()<<"select friend error"<<userdb.lastError();
-       return ;
+    QSqlQuery query(strQuery);
+    if (query.next()) {
+        // 查询到有该用户，不添加
+        qDebug() << "已经是好友了，无法再次添加" << query.value(0).toString();
+            return;
     }
-    else
-   {
-       if(query.next())
-       {
-           qDebug()<<"You have already add this friend!\n";
-           QMessageBox::warning(NULL,"Warning","你已经添加过该好友",QMessageBox::Cancel);
-           return;
-       }
 
-       QString sqlInsert=QString("insert into friend (id,userId,name) values(%1,%2,'%3');").arg(id).arg(userid).arg(name);
+    // 根据新ID重新创建用户
+    query.prepare("INSERT INTO MyFriend (id, name, head, group) "
+                  "VALUES (?, ?, ?, ?);");
+    query.bindValue(0, friendID);
+    query.bindValue(1, "");
+    query.bindValue(2, "");
+    query.bindValue(3, "我的好友");
 
-       if(!query.exec(sqlInsert))
-       {
-           qDebug()<<"add friend error"<<userdb.lastError();
-       }
-       else
-       {
-           QMessageBox::information(NULL,"Sucessful","添加好友成功",QMessageBox::Cancel);
-       }
-   }
+    query.exec();
+
+    //此处再向服务器添加一条好友信息
+
+//   if(!query.exec(sqlSelect))
+//    {   qDebug()<<"select friend error"<<userdb.lastError();
+//       return ;
+//    }
+//    else
+//   {
+//       if(query.next())
+//       {
+//           qDebug()<<"You have already add this friend!\n";
+//           QMessageBox::warning(NULL,"Warning","你已经添加过该好友",QMessageBox::Cancel);
+//           return;
+//       }
+
+//       QString sqlInsert=QString("insert into friend (id,userId,name) values(%1,%2,'%3');").arg(id).arg(userid).arg(name);
+
+//       if(!query.exec(sqlInsert))
+//       {
+//           qDebug()<<"add friend error"<<userdb.lastError();
+//       }
+//       else
+//       {
+//           QMessageBox::information(NULL,"Sucessful","添加好友成功",QMessageBox::Cancel);
+//       }
+//   }
 
 
 }
 
-void sql_manage::deleFriend(int id, int userid)
+bool sql_manage::deleFriend(int id, int friendID)
 {
-    QSqlQuery query(userdb);
-    //查找是否有该好友
-   QString sqlSelect=QString("select * from friend where id=%1 and userId=%2").arg(id).arg(userid);
 
-   if(!query.exec(sqlSelect))
-    {   qDebug()<<"select friend error"<<userdb.lastError();
-       return ;
-    }
-    else
-   {
-       if(!query.next())
-       {
-           QMessageBox::warning(NULL,"Warning","找不到该好友",QMessageBox::Cancel);
+    QString strQuery = "SELECT * FROM MyFriend ";
+    strQuery.append("WHERE id=");
+    strQuery.append(QString::number(friendID));
 
-       }
-       else
-       {
-           QString sqldelete=QString("delete from friend where id=%1 and userId=%2").arg(id).arg(userid);
-           if(!query.exec(sqldelete))
-           {
-               qDebug()<<"delete error"<<userdb.lastError();
-           }
-           else
-           {
-               QMessageBox::information(NULL,"Sucessful","删除好友成功",QMessageBox::Cancel);
-           }
-       }
+
+    QSqlQuery query(strQuery);
+    // 删除
+    if (query.next()) {
+       strQuery = "DELETE FROM MyFriend WHERE id=";
+       strQuery.append(QString::number(friendID));
+
+       query = QSqlQuery(strQuery);
+       return query.exec();
     }
+
+    // 没有查询到有该用户
+    // 向服务器更新消息
+    return false;
 }
 
 bool sql_manage::isMyFriend(int friendId)
@@ -188,6 +203,20 @@ QJsonObject sql_manage::getFriendInfo(int id) const
        json.insert("name", query.value(1).toString());
        json.insert("head", query.value(2).toString());
        json.insert("subgroup",query.value(3).toString());
+    }
+    return json;
+}
+
+QJsonObject sql_manage::getGroupInfo(int id) const
+{
+    QString strQuery = "SELECT * FROM MyGroup where id = ";
+    strQuery.append(QString::number(id));
+    QSqlQuery query(strQuery);
+    QJsonObject json;
+
+    while (query.next()) {
+       json.insert("name", query.value(1).toString());
+       json.insert("head", query.value(3).toString());
     }
     return json;
 }

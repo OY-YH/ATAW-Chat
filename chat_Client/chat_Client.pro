@@ -14,7 +14,7 @@ SOURCES += \
     leftw.cpp \
     main.cpp \
     mainwindow.cpp \
-    qnchatmessage.cpp \
+#    qnchatmessage.cpp \
     sql_manage.cpp \
     tcp_manage.cpp
 
@@ -23,7 +23,7 @@ HEADERS += \
     frienddlg.h \
     leftw.h \
     mainwindow.h \
-    qnchatmessage.h \
+#    qnchatmessage.h \
     sql_manage.h \
     tcp_manage.h
 

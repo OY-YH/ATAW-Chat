@@ -2,6 +2,7 @@
 #include "listwidget.h"
 #include "mybutton.h"
 #include "qbuttongroup.h"
+#include "qmenu.h"
 #include "qpushbutton.h"
 #include "ui_contactwidget.h"
 #include "sql_manage.h"
@@ -77,8 +78,8 @@ void ContactWidget::InitList()
     friendSortMenu->addAction(tr("按id排序"));
     friendSortMenu->addAction(tr("按名字排序"));
 
-    connect(dadMenu,SIGNAL(triggered(QAction *)),
-            this,SLOT(onFriendDadMenuSelected(QAction *)));
+    connect(dadMenu,&QMenu::triggered,
+            this,&ContactWidget::onFriendDadMenuSelected);
     ui->friendList->setDadPopMenu(dadMenu);
 
     //设置好友列表中的好友格子右击菜单

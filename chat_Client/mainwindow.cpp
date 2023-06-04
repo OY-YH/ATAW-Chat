@@ -245,7 +245,7 @@ void MainWindow::sltTcpReply(quint8 type, QJsonValue dataVal)
     break;
     case SendMsg:
     {
-//        parseFriendMessageReply(dataVal);//收到私聊消息
+        parseFriendMessageReply(dataVal);//收到私聊消息
     }
     break;
     case SendGroupMsg:
@@ -256,12 +256,12 @@ void MainWindow::sltTcpReply(quint8 type, QJsonValue dataVal)
     case SendFile:
     case SendPicture:
     {
-//        parseSendFileReply(dataVal);//收到服务器文件下载通知
+        parseSendFileReply(dataVal);//收到服务器文件下载通知
     }
     break;
     case MsgReceived:
     {
-//        rightBar->msgconfirmed(dataVal);
+        rightBar->msgconfirmed(dataVal);
     }
     break;
     case DeleteFriend:
@@ -419,38 +419,38 @@ void MainWindow::parseAddGroupRequestConfirmed(const QJsonValue &dataVal)
 
         query.exec();
 
-//        Cell *cell = new Cell;
-//        cell->id = id;
-//        cell->name = name;
-//        cell->iconPath = MyApp::m_strHeadPath + head;
-//        cell->type = Cell_GroupChat;
-//        cell->status = OnLine;
-//        cell->msg = "你已加入该群";
-//        cell->subTitle = QDateTime::currentDateTime().toString("hh:mm:ss");
+        Cell *cell = new Cell;
+        cell->id = id;
+        cell->name = name;
+        cell->iconPath = MyApp::m_strHeadPath + head;
+        cell->type = Cell_GroupChat;
+        cell->status = OnLine;
+        cell->msg = "你已加入该群";
+        cell->subTitle = QDateTime::currentDateTime().toString("hh:mm:ss");
 
-//        midBar->insertCell(cell);
-//        midBar->switchToChatList();
+        midBar->insertCell(cell);
+        midBar->switchToChatList();
 
-//        QJsonObject jsonObj;
-//        jsonObj.insert("type",Notice);
-//        jsonObj.insert("noticeType",NewMember);
-//        jsonObj.insert("group",cell->id);
-//        jsonObj.insert("id",MyApp::m_nId);
-//        jsonObj.insert("msg",QString("你已经加入该群，") + "开始聊天吧！");
+        QJsonObject jsonObj;
+        jsonObj.insert("type",Notice);
+        jsonObj.insert("noticeType",NewMember);
+        jsonObj.insert("group",cell->id);
+        jsonObj.insert("id",MyApp::m_nId);
+        jsonObj.insert("msg",QString("你已经加入该群，") + "开始聊天吧！");
 
-//        rightBar->msgReceived(cell,jsonObj);
-//        onBtnClicked(0);
+        rightBar->msgReceived(cell,jsonObj);
+        onleftBtnClicked(0);
 
-//        Cell* c = new Cell;
-//        c->type = Cell_GroupContact;
-//        c->groupName = "我的群组";
-//        c->id = cell->id;
-//        c->name = cell->name;
-//        c->iconPath = cell->iconPath;
-//        c->isClicked = false;
-//        c->status = OnLine;
+        Cell* c = new Cell;
+        c->type = Cell_GroupContact;
+        c->groupName = "我的群组";
+        c->id = cell->id;
+        c->name = cell->name;
+        c->iconPath = cell->iconPath;
+        c->isClicked = false;
+        c->status = OnLine;
 
-//        midBar->addCellToContact(c);
+        midBar->addCellToContact(c);
     }
 }
 
@@ -476,33 +476,6 @@ void MainWindow::parseAddFriendRequestConfirmed(const QJsonValue &dataVal)
 
         query.exec();
 
-//        //通知服务器，已同意
-//        QJsonObject jsonObj;
-//        json.insert("userID1",cell->id);
-//        json.insert("userID2",MyApp::m_nId);
-//        json.insert("time",QDateTime::currentDateTime().toString("yyyy-MM-dd  hh:mm:ss"));
-//        emit signalAddFriend(AddFriendRequist,json);
-        // 判断我是否已经添加该好友
-//        if (!sql_manage::Instance()->isMyFriend(MyApp::m_nId)) {
-//               Cell *cell = new Cell;
-//               cell->groupName = QString(tr("我的好友"));
-//               cell->iconPath  = MyApp::m_strHeadPath + json.value("head").toString();
-//               cell->type      = CellType_Child;
-//               cell->name     = name;
-//               cell->subTitle  = QString("当前用户状态：在线 ");
-//               cell->id        = nId;
-//               cell->status    = OnLine;
-
-//               ui->frindListWidget->insertQQCell(cell);
-
-//               // 更新至数据库
-//               DataBaseMagr::Instance()->AddFriend(cell->id, MyApp::m_nId, cell->name);
-//        }
-
-//        // 播放系统提示音
-//        myHelper::PlaySound("system");
-//        // 询问
-//        CMessageBox::Question(this, tr("[%1] 请求加你为好友，是否接受？\n %2").arg(name).arg(strMsg));
 
         Cell *cell = new Cell;
         cell->id = id;
@@ -513,28 +486,91 @@ void MainWindow::parseAddFriendRequestConfirmed(const QJsonValue &dataVal)
         cell->msg = "你和" + QString::number(id) + "已经成为好友了！";
         cell->subTitle = QDateTime::currentDateTime().toString("hh:mm:ss");
 
-//        midBar->insertCell(cell);
-//        midBar->switchToChatList();
 
-//        QJsonObject jsonObj;
-//        jsonObj.insert("type",Notice);
-//        jsonObj.insert("noticeType",NewFriend);
-//        jsonObj.insert("id",id);
-//        jsonObj.insert("msg","你和" + QString::number(id) + "已经成为好友了，开始聊天吧！");
+        midBar->insertCell(cell);
+        midBar->switchToChatList();
 
-//        rightBar->allowSendMsg(id);
-//        rightBar->msgReceived(cell,jsonObj);
-//        onBtnClicked(0);
+        QJsonObject jsonObj;
+        jsonObj.insert("type",Notice);
+        jsonObj.insert("noticeType",NewFriend);
+        jsonObj.insert("id",id);
+        jsonObj.insert("msg","你和" + QString::number(id) + "已经成为好友了，开始聊天吧！");
 
-//        Cell* c = new Cell;
-//        c->type = Cell_FriendContact;
-//        c->groupName = "默认分组";
-//        c->id = cell->id;
-//        c->name = cell->name;
-//        c->iconPath = cell->iconPath;
-//        c->isClicked = false;
-//        c->status = OnLine;
-//        midBar->addCellToContact(c);
+        rightBar->allowSendMsg(id);
+        rightBar->msgReceived(cell,jsonObj);
+        onleftBtnClicked(0);
+
+        Cell* c = new Cell;
+        c->type = Cell_FriendContact;
+        c->groupName = "默认分组";
+        c->id = cell->id;
+        c->name = cell->name;
+        c->iconPath = cell->iconPath;
+        c->isClicked = false;
+        c->status = OnLine;
+        midBar->addCellToContact(c);
+    }
+}
+
+void MainWindow::parseFriendMessageReply(const QJsonValue &dataVal)
+{
+    if(dataVal.isObject()){
+        QJsonObject json = dataVal.toObject();
+        int senderID = json.value("id").toInt();//获取消息发送者的ID
+        QString name = json.value("name").toString();
+
+        Cell* cell = midBar->isIDExist(senderID);
+        if(cell == nullptr){//证明聊天列表中没有和该用户的聊天记录
+            cell = new Cell;
+            cell->id = senderID;
+            QJsonObject json = sql_manage::Instance()->getFriendInfo(senderID);
+            cell->name = json.value("name").toString();
+            cell->iconPath = json.value("head").toString();
+            cell->type = Cell_FriendChat;
+
+            midBar->insertCell(cell);
+            midBar->switchToChatList();
+            //同时新增一个chatWindow
+        }
+
+        rightBar->msgReceived(cell,dataVal);
+    }
+}
+
+void MainWindow::parseSendFileReply(const QJsonValue &dataVal)
+{
+    if(dataVal.isObject()){
+        QJsonObject json = dataVal.toObject();
+        int tag = json.value("tag").toInt();
+        int id = json.value("id").toInt();
+        int groupid = json.value("group").toInt();
+        Cell *cell = nullptr;
+        if(tag == 0){//私发文件
+            cell = midBar->isIDExist(id);
+        }else if(tag == 1){//群发文件
+            cell = midBar->isIDExist(groupid);
+        }
+
+        if(cell == nullptr){
+            cell = new Cell;
+            if(tag == 0){//私发文件
+                cell->id = id;
+                QJsonObject json = sql_manage::Instance()->getFriendInfo(id);
+                cell->name = json.value("name").toString();
+                cell->iconPath = json.value("head").toString();
+                cell->type = Cell_FriendChat;
+            }else if(tag == 1){//群发文件
+                cell->id = groupid;
+                QJsonObject json = sql_manage::Instance()->getGroupInfo(groupid);
+                cell->name = json.value("name").toString();
+                cell->iconPath = json.value("head").toString();
+                cell->type = Cell_GroupChat;
+            }
+            midBar->insertCell(cell);
+            midBar->switchToChatList();
+        }
+
+        rightBar->msgReceived(cell,dataVal);
     }
 }
 

@@ -45,9 +45,8 @@ midw::midw(QWidget *parent) :
     contactWidget = new ContactWidget;
 
     ui->stackedWidget->addWidget(contactWidget);
-    ui->stackedWidget->setCurrentIndex(0);//默认打开chatList列表
+    ui->stackedWidget->setCurrentIndex(1);//默认打开chatList列表
 //    ui->stackedWidget->setCurrentWidget(ui->chatListW);
-
 
 
     connect(contactWidget,&ContactWidget::signalSendMessage,
@@ -69,12 +68,12 @@ void midw::MainPageChanged(int page)
         int cnt = ui->chatList->getAllCells().size();
         if(cnt == 0){
             qDebug()<<"1111";
-            ui->stackedWidget->setCurrentIndex(0);
+            ui->stackedWidget->setCurrentIndex(1);
             qDebug()<<ui->stackedWidget->currentIndex();
             qDebug()<<ui->stackedWidget->currentWidget();
         }else{
             qDebug()<<"0000";
-            ui->stackedWidget->setCurrentIndex(1);
+            ui->stackedWidget->setCurrentIndex(0);
             qDebug()<<ui->stackedWidget->currentIndex();
             qDebug()<<ui->stackedWidget->currentWidget();
         }
@@ -195,17 +194,6 @@ Cell *midw::isIDExist(int id)
     return nullptr;
 }
 
-//void midw::on_btn_add_clicked(Cell* cell)
-//{
-////    emit resetRightPage();
-//    addFriendWnd *add= new addFriendWnd(cell);
-//    connect(add,&addFriendWnd::signalAddFriend,
-//            this,&midw::signalSendMessage);
-//    connect(add,&addFriendWnd::signalAddChat,this,&midw::signalAddChat);
-
-//    add->exec();
-
-//}
 
 void midw::updateTime(int id, qint64 time,QString msg)
 {

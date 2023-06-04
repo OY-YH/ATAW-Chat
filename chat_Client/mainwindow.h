@@ -48,6 +48,10 @@ private slots:
     void parseAddGroupRequestConfirmed(const QJsonValue &dataVal);
     void parseAddFriendRequestConfirmed(const QJsonValue &dataVal);
 
+    void parseFriendMessageReply(const QJsonValue &dataVal);
+
+    void parseSendFileReply(const QJsonValue &dataVal);
+
     void sltFileRecvFinished(quint8,QString,int);
 
 //    void on_btn_min_clicked();
