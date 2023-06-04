@@ -39,17 +39,18 @@ public slots:
 private slots:
     void sltConnected();
     void sltDisconnected();
-    // 消息解析和抓转发处理
 
+    // 消息解析和抓转发处理
     void readMsg();
 
 private:
-    // 消息解析和抓转发处理
 
-//    void readMsg();
     // 消息回发
 //    void sendMessage(const quint8 &type, const QJsonValue &jsonVal);
+
+    void parseFriendMessages(const QByteArray &reply);
     void ParseGroupMessages(const QByteArray &reply);
+
     void UserLogin(QJsonValue data);
     void parseReister(const QJsonValue &dataVal);
     void ParseUserOnline(const QJsonValue &dataVal);
@@ -90,10 +91,12 @@ public:
     void insertDataBase(QString filepath,QString filename);
 
 //    void StartTransferFile(QString fileName);
-    void readFileMsg();
-   void handleHeadmsg(QString data);
-   void handleFileMsg(QByteArray dataD);
-   void sendFile();
+//    void readFileMsg();
+
+//   void handleHeadmsg(QString data);
+//   void handleFileMsg(QByteArray dataD);
+
+//   void sendFile();
 signals:
    void signalConnected();
    void signalDisConnected();
@@ -113,7 +116,7 @@ private slots:
    void sltUpdateClientProgress(qint64 numBytes);
 
 private:
-    QTcpSocket* m_fileSocket;
+//    QTcpSocket* m_fileSocket;
 
     /************* Receive file *******************/
     quint64 loadSize;
@@ -123,7 +126,7 @@ private:
     QString filesavepath;       //存放文件的保存路径
     QByteArray inBlock;   //数据缓冲区
     quint64 ullRecvTotalBytes;  //数据总大小
-    QFile *fileToRecv;  //要发送的文件
+    QFile *fileToRecv;  //要接收的文件
 
     QTcpSocket *m_tcpSocket;
 
@@ -146,13 +149,13 @@ private:
     qint32 tag;//标记聊天双方是私聊还是群聊，tag=0表示私聊，tag=1表示群聊
     qint64 msgSendTime;
 
-    QFile file;
-    QString fileName;
-    int fileSize;
-    bool isFile;
-    int recvSize;
-    int sendSize;
-    QTimer timer;
+//    QFile file;
+//    QString fileName;
+//    int fileSize;
+//    bool isFile;
+//    int recvSize;
+//    int sendSize;
+//    QTimer timer;
 //    int recvID;
 
 };

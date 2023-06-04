@@ -18,7 +18,7 @@
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stackedWidgetMain">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="LoginWidget">
        <widget class="QWidget" name="widget_2" native="true">
@@ -212,7 +212,7 @@
            <item row="0" column="0">
             <widget class="AnimationStackedWidget" name="stackedWidget">
              <property name="currentIndex">
-              <number>0</number>
+              <number>2</number>
              </property>
              <widget class="QWidget" name="page">
               <layout class="QGridLayout" name="gridLayout_9">
@@ -266,7 +266,7 @@
                   <item row="2" column="0">
                    <widget class="QLabel" name="label_6">
                     <property name="text">
-                     <string>TextLabel</string>
+                     <string>Password</string>
                     </property>
                    </widget>
                   </item>
@@ -278,7 +278,7 @@
                    </widget>
                   </item>
                   <item row="1" column="1">
-                   <widget class="QLineEdit" name="lineEdit"/>
+                   <widget class="QLineEdit" name="lineEditAddUser"/>
                   </item>
                   <item row="5" column="0">
                    <widget class="QLabel" name="label_8">
@@ -297,12 +297,12 @@
                   <item row="1" column="0">
                    <widget class="QLabel" name="label_5">
                     <property name="text">
-                     <string>TextLabel</string>
+                     <string>Name</string>
                     </property>
                    </widget>
                   </item>
                   <item row="2" column="1">
-                   <widget class="QLineEdit" name="lineEdit_2"/>
+                   <widget class="QLineEdit" name="lineEditAddPasswd"/>
                   </item>
                   <item row="4" column="1">
                    <widget class="QLineEdit" name="lineEdit_3"/>
@@ -338,16 +338,16 @@
                    </widget>
                   </item>
                   <item row="0" column="0">
-                   <widget class="QPushButton" name="pushButton_2">
+                   <widget class="QPushButton" name="btn_Insert">
                     <property name="text">
-                     <string>PushButton</string>
+                     <string>Insert</string>
                     </property>
                    </widget>
                   </item>
                   <item row="0" column="1">
-                   <widget class="QPushButton" name="pushButton_4">
+                   <widget class="QPushButton" name="btn_Refresh">
                     <property name="text">
-                     <string>PushButton</string>
+                     <string>Refresh</string>
                     </property>
                    </widget>
                   </item>
@@ -486,16 +486,16 @@
                   </spacer>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="pushButton_8">
+                  <widget class="QPushButton" name="btn_backUp">
                    <property name="text">
-                    <string>PushButton</string>
+                    <string>backup</string>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="pushButton_7">
+                  <widget class="QPushButton" name="btn_backUndo">
                    <property name="text">
-                    <string>PushButton</string>
+                    <string>Undo</string>
                    </property>
                   </widget>
                  </item>
@@ -537,9 +537,34 @@
           </property>
           <column>
            <property name="text">
-            <string notr="true">1</string>
+            <string>ATAW</string>
            </property>
           </column>
+          <item>
+           <property name="text">
+            <string>用户信息</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>服务配置</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>用户管理</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>密码修改</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>数据备份</string>
+           </property>
+          </item>
          </widget>
         </item>
         <item row="0" column="0" colspan="2">
@@ -584,7 +609,7 @@
             </widget>
            </item>
            <item row="0" column="4">
-            <widget class="QPushButton" name="pushButton">
+            <widget class="QPushButton" name="btn_quit">
              <property name="text">
               <string>quit</string>
              </property>

@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "clientsocket.h"
 #include "qabstractitemmodel.h"
 #include "qlabel.h"
 #include "qmessagebox.h"
@@ -8,6 +9,7 @@
 #include "ui_mainwindow.h"
 #include "database.h"
 #include "myapp.h"
+#include "type.h"
 
 #include<QJsonParseError>
 #include <QJsonDocument>
@@ -15,6 +17,8 @@
 #include <QJsonObject>
 #include <QMessageBox>
 #include <QModelIndex>
+#include <QFileDialog>
+#include <QJsonArray>
 
 #include<tcpServer.h>
 
@@ -42,36 +46,36 @@ MainWindow::MainWindow(QWidget *parent)
     //隐藏表头
     ui->treeWidget->setHeaderHidden(true);
 
-    QStringList l;
-    l<<"ATAW Server";
-    QTreeWidgetItem *qf=new QTreeWidgetItem(ui->treeWidget,l);
-    ui->treeWidget->addTopLevelItem(qf);
+//    QStringList l;
+//    l<<"ATAW Server";
+//    QTreeWidgetItem *qf=new QTreeWidgetItem(ui->treeWidget,l);
+//    ui->treeWidget->addTopLevelItem(qf);
 
-    l.clear();
-    l<<"用户信息";
-    QTreeWidgetItem *q1=new QTreeWidgetItem(qf,l);
-    qf->addChild(q1);
-    //    ui->treeWidget->setItemWidget(q1,0,ui->tableWidget);
+//    l.clear();
+//    l<<"用户信息";
+//    QTreeWidgetItem *q1=new QTreeWidgetItem(qf,l);
+//    qf->addChild(q1);
+//    //    ui->treeWidget->setItemWidget(q1,0,ui->tableWidget);
 
-    l.clear();
-    l<<"服务配置";
-    QTreeWidgetItem *q2=new QTreeWidgetItem(qf,l);
-    qf->addChild(q2);
+//    l.clear();
+//    l<<"服务配置";
+//    QTreeWidgetItem *q2=new QTreeWidgetItem(qf,l);
+//    qf->addChild(q2);
 
-    l.clear();
-    l<<"用户管理";
-    QTreeWidgetItem *q3=new QTreeWidgetItem(qf,l);
-    qf->addChild(q3);
+//    l.clear();
+//    l<<"用户管理";
+//    QTreeWidgetItem *q3=new QTreeWidgetItem(qf,l);
+//    qf->addChild(q3);
 
-    l.clear();
-    l<<"密码修改";
-    QTreeWidgetItem *q4=new QTreeWidgetItem(qf,l);
-    qf->addChild(q4);
+//    l.clear();
+//    l<<"密码修改";
+//    QTreeWidgetItem *q4=new QTreeWidgetItem(qf,l);
+//    qf->addChild(q4);
 
-    l.clear();
-    l<<"数据备份";
-    QTreeWidgetItem *q5=new QTreeWidgetItem(qf,l);
-    qf->addChild(q5);
+//    l.clear();
+//    l<<"数据备份";
+//    QTreeWidgetItem *q5=new QTreeWidgetItem(qf,l);
+//    qf->addChild(q5);
 
     ui->treeWidget->expandAll();
     ui->stackedWidget->setCurrentIndex(0);
@@ -110,9 +114,9 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::readMsg()
-{
-}
+//void MainWindow::readMsg()
+//{
+//}
 
 // 初始化网络
 void MainWindow::InitNetwork()
@@ -128,7 +132,10 @@ void MainWindow::InitNetwork()
 
     connect(msgServer, &TcpMsgServer::signalDownloadFile, fileServer, &TcpFileServer::SltClientDownloadFile);
     connect(msgServer, &TcpMsgServer::signalUserStatus, this, &MainWindow::ShowUserStatus);
+
     connect(fileServer, &TcpFileServer::signalUserStatus, this, &MainWindow::ShowUserStatus);
+    connect(fileServer,&TcpFileServer::signalMsgToClient,
+           msgServer,&TcpMsgServer::SltMsgToClient);
 
     systemTrayIcon = new QSystemTrayIcon(this);
     systemTrayIcon->setIcon(QIcon(":/res/images/ic_app.png"));
@@ -146,82 +153,25 @@ void MainWindow::InitNetwork()
     connect(m_trayMenu, &QMenu::triggered, this, &MainWindow::SltTrayIconMenuClicked);
 }
 
-//void MainWindow::newConnect()
-//{
-//        QTcpSocket* sockCln=nullptr;;
-//        sockCln=sockSer->nextPendingConnection();
-//        QString ip=sockCln->peerAddress().toString();
-//        int port=sockCln->peerPort();
-//        QString showClint=QString("ip:%1 port:%2").arg(ip).arg(port);
-//        ui->textEdit->append(showClint);
 
-//        sockLists.append(sockCln);
-//        connect(sockCln,&QTcpSocket::readyRead,[=](){
+/**
+ * @brief MainWindow::SetUserIdentity
+ * 根据用户的身份进行界面显示控制
+ * @param identity
+ */
+void MainWindow::SetUserIdentity(const int &identity)
+{
+//    ui->treeWidget->->setVisible(Mangager == identity);
+//    ui->btnUsersPage->setVisible(Administrator == identity);
+//    ui->btnUserInfoPage->setVisible(Administrator == identity);
+//    ui->btnDataBackup->setVisible(Mangager == identity);
 
-//                QByteArray readmsg=sockCln->readAll();
+//    // 根据用户权限设定界面功能的使用
+//    if (Mangager == identity) ui->stackedWidgetFunc->setCurrentIndex(1);
+//    else if (Worker == identity) ui->stackedWidgetFunc->setCurrentIndex(1);
+//    else if (Administrator == identity) ui->stackedWidgetFunc->setCurrentIndex(0);
+}
 
-//                  qDebug()<<"recv from client"<<readmsg<<sockCln->peerPort();
-//                ui->textEdit->append(readmsg);
-
-
-
-//        });
-//                QString message=readmsg;
-//                if(message.section("##",0,0)=="sendfile")
-//                {
-//                        fileName=message.section("##",1,1);
-//                        fileSize=message.section("##",2,2).toUInt();
-//                        file.setFileName(fileName);
-//                        if(!file.open(QIODevice::WriteOnly))
-//                            qDebug()<<"文件打开失败";
-
-//                       isFile=true;
-//                       fileport=sockCln->peerPort();
-//                }
-//                else if(isFile)
-//                {
-//                    qDebug()<<"开始写文件";
-
-//                    recvSize=0;
-//                    int len=file.write(readmsg);
-//                    recvSize+=len;
-//                    if(recvSize==fileSize)//接受完文件
-//                    {
-//                        qDebug()<<"接受文件完成";
-//                        isFile=false;
-//                        file.close();
-//                        //发送文件给其他客户端
-//                        foreach (QTcpSocket* sock, sockLists) {
-//                            if(sock->peerPort()!=fileport)
-//                            {
-//                                curScok=sock;
-//                                sendhead(sock);
-//                            }
-
-//                        }
-//                    }
-
-//                }
-//                else//读取文本信息
-//                {
-//                    qDebug()<<"发送文本消息";
-//                    foreach (QTcpSocket* sock, sockLists) {
-//                        QString sendmsg=QString("sendmsg##%1").arg(message);
-//                        sock->write(sendmsg.toUtf8());
-//                    }
-
-
-//                }
-//            }
-
-//        );
-
-
-
-
-//        connect(sockCln,&QTcpSocket::disconnected,this,&MainWindow::removeSocket);
-
-//}
 
 void MainWindow::removeSocket()
 {
@@ -240,38 +190,38 @@ void MainWindow::removeSocket()
 
 }
 
-void MainWindow::sendfile(QTcpSocket *&sock)
-{
-     qDebug()<<"send";
-    if(!file.open(QIODevice::ReadOnly))
-        qDebug()<<"文件打开失败";
-    int len;
-    do{
+//void MainWindow::sendfile(QTcpSocket *&sock)
+//{
+//     qDebug()<<"send";
+//    if(!file.open(QIODevice::ReadOnly))
+//        qDebug()<<"文件打开失败";
+//    int len;
+//    do{
 
-        char buf[4*1024]={0};
-        len=0;
-        len=file.read(buf,sizeof(buf));
-        len=sock->write(buf,len);
-        sendSize+=len;
-    }while(len>0);
-    if(sendSize==fileSize)
-    {
-        curScok=nullptr;
-        file.close();
-        sendSize=0;
-        qDebug()<<"文件发送成功";
-    }
+//        char buf[4*1024]={0};
+//        len=0;
+//        len=file.read(buf,sizeof(buf));
+//        len=sock->write(buf,len);
+//        sendSize+=len;
+//    }while(len>0);
+//    if(sendSize==fileSize)
+//    {
+//        curScok=nullptr;
+//        file.close();
+//        sendSize=0;
+//        qDebug()<<"文件发送成功";
+//    }
 
-}
+//}
 
-void MainWindow::sendhead(QTcpSocket *&sock)
-{
-    //封装头部信息
-    QString head=QString("sendfile##%1##%2").arg(fileName).arg(fileSize);
-    sock->write(head.toUtf8());
-    timer.start(20);
+//void MainWindow::sendhead(QTcpSocket *&sock)
+//{
+//    //封装头部信息
+//    QString head=QString("sendfile##%1##%2").arg(fileName).arg(fileSize);
+//    sock->write(head.toUtf8());
+//    timer.start(20);
 
-}
+//}
 
 //exit
 void MainWindow::on_btn_Exit_clicked()
@@ -294,10 +244,10 @@ void MainWindow::on_btn_Login_clicked()
         return;
     }
 
-//    MyApp::m_nId = nId;
-//    MyApp::m_nIdentyfi = identity;
+    MyApp::m_nId = nId;
+    MyApp::m_nIdentyfi = identity;
     //    // 设置权限
-    //    SetUserIdentity(identity);
+//    SetUserIdentity(identity);
 
     ui->stackedWidgetMain->setCurrentIndex(1);
 }
@@ -327,7 +277,8 @@ void MainWindow::SltTableClicked(const QModelIndex &index)
 
 void MainWindow::ShowUserStatus(const QString &text)
 {
-
+    qDebug() << text;
+    ui->textBrowser->append(text);
 }
 
 // 托盘菜单
@@ -361,3 +312,100 @@ void MainWindow::SltTrayIconMenuClicked(QAction *action)
         this->show();
     }
 }
+
+
+
+void MainWindow::on_btn_quit_clicked()
+{
+    ui->stackedWidgetMain->setCurrentIndex(0);
+}
+
+
+void MainWindow::on_btn_backUp_clicked()
+{
+    qDebug()<<" beifen";
+    QString strNewFile = MyApp::m_strBackupPath + QString("info_%1.bak").arg(QDate::currentDate().toString("yyyy_MM_dd"));
+    if (QFile::exists(strNewFile)) {
+        QFile::remove(strNewFile);
+    }
+    bool bOk = QFile::copy(MyApp::m_strDatabasePath + "info.db", strNewFile);
+    QMessageBox::information(this,"backup", bOk ? tr("数据备份成功") : tr("数据备份失败"));
+}
+
+
+void MainWindow::on_btn_backUndo_clicked()
+{
+    if (QMessageBox::Accepted == QMessageBox::question(this,"Undo", tr("是否还原数据库，该操作不可逆，请确认?")))
+    {
+        Database::Instance()->closeDb();
+        bool bOk = QFile::remove(MyApp::m_strDatabasePath + "info.db");
+        if (bOk) {
+            QString strFile = QFileDialog::getOpenFileName(this, tr("选择还原文件"),
+                                                           MyApp::m_strBackupPath,
+                                                           tr("备份(*.bak)"));
+            if (strFile.isEmpty()) {
+                QMessageBox::information(this,"undo", tr("备份文件选择错误，还原终止！"));
+                // 加载数据库
+                Database::Instance()->openDb(MyApp::m_strDatabasePath + "info.db");
+                return;
+            }
+
+            bOk = QFile::copy(strFile, MyApp::m_strDatabasePath + "info.db");
+            QMessageBox::information(this,"undo", bOk ? tr("数据还原成功！") : tr("数据还原失败！"));
+        }
+        else
+        {
+            QMessageBox::information(this, tr("提示"), tr("删除文件错误，还原终止！"));
+        }
+
+        // 重新打开数据库
+        Database::Instance()->openDb(MyApp::m_strDatabasePath + "info.db");
+    }
+}
+
+
+void MainWindow::on_btn_Refresh_clicked()
+{
+    QJsonArray jsonArry = Database::Instance()->getAllUsers();
+
+    m_model->clear();
+    m_model->setColumnCount(5);
+    m_model->setRowCount(jsonArry.size());
+    m_model->setHorizontalHeaderLabels(QStringList() << "用户" << "姓名" << "密码" << "状态" << "最后登录时间");
+
+    for (int i = 0; i < jsonArry.size(); i++) {
+        QJsonObject jsonObj = jsonArry.at(i).toObject();
+
+        m_model->setData(m_model->index(i, 0), jsonObj.value("id").toInt());
+        m_model->setData(m_model->index(i, 1), jsonObj.value("name").toString());
+        m_model->setData(m_model->index(i, 2), jsonObj.value("passwd").toString());
+        int nStatus = jsonObj.value("status").toInt();
+        m_model->setData(m_model->index(i, 3), OnLine == nStatus ? tr("在线") : tr("离线"));
+        m_model->setData(m_model->index(i, 4), jsonObj.value("lasttime").toString());
+    }
+
+    ui->tableViewUsers->setColumnWidth(4, 150);
+}
+
+
+void MainWindow::on_btn_Insert_clicked()
+{
+    QString strName = ui->lineEditAddUser->text();
+    QString strPasswd = ui->lineEditAddPasswd->text();
+
+    if (strName.isEmpty()) {
+        QMessageBox::information(this, tr("提示"), tr("用户名不能为空"));
+        return;
+    }
+
+    strPasswd = strPasswd.isEmpty() ? "123456" : strPasswd;
+
+    int nId = Database::Instance()->registerUser(strName, strPasswd);
+
+    // 判断
+    QMessageBox::information(this, tr("提示"), -1 == nId ? tr("用户添加失败") : tr("用户添加成功！"));
+    if (-1 != nId) {
+        on_btn_Refresh_clicked();
+    }
+}
+

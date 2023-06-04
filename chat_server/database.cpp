@@ -5,6 +5,8 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QSqlQuery>
+#include "myapp.h"
+#include <QFile>
 
 #define DATE_TME_FORMAT     QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss")
 
@@ -94,6 +96,11 @@ bool Database::openDb(const QString &dataName)
     return true;
 }
 
+void Database::closeDb()
+{
+    userdb.close();
+}
+
 void Database::updateUserStatus(const int &id, const quint8 &status)
 {
     // 组织sql语句
@@ -121,6 +128,26 @@ void Database::updateUserHead(const int &id, const QString &strHead)
     QSqlQuery query(strSql);
     bool bOk = query.exec();
     qDebug() << "update head" << bOk << id;
+}
+
+QJsonArray Database::getAllUsers()
+{
+    QSqlQuery query("SELECT * FROM USERINFO ORDER BY id;");
+    QJsonArray jsonArr;
+
+    while (query.next()) {
+        QJsonObject jsonObj;
+        jsonObj.insert("id", query.value("id").toInt());
+        jsonObj.insert("name", query.value("name").toString());
+        jsonObj.insert("passwd", query.value("passwd").toString());
+        jsonObj.insert("head", query.value("head").toString());
+        jsonObj.insert("status", query.value("status").toInt());
+        jsonObj.insert("groupId", query.value("groupId").toInt());
+        jsonObj.insert("lasttime", query.value("lasttime").toString());
+        jsonArr.append(jsonObj);
+    }
+
+    return jsonArr;
 }
 
 QJsonObject Database::getUserStatus(const int &id) const
@@ -279,8 +306,10 @@ int Database::registerUser(QString name, QString pwd)
     query.exec();
 
 
-    //为用户分配存放头像的目录
-//    MyApp::createDir(MyApp::m_strHeadPath + QString::number(id) + "/");
+//    为用户分配存放头像的目录
+    MyApp::createDir(MyApp::m_strHeadPath + QString::number(id) + "/");
+    QFile::copy(MyApp::m_strHeadPath + "system/default.png",
+                           MyApp::m_strHeadPath + QString::number(id) + "/" + QString::number(id) + ".png");
 //    myHelper::CopyFile(MyApp::m_strHeadPath + "system/default.png",
 //                       MyApp::m_strHeadPath + QString::number(id) + "/" + QString::number(id) + ".png");
 

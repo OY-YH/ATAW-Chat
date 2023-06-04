@@ -26,15 +26,19 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    void readMsg();
+//    void readMsg();
     void InitNetwork();
-    void newConnect();
+//    void newConnect();
+
+    void SetUserIdentity(const int &identity);
     void removeSocket();
-    void sendfile(QTcpSocket* &sock);
-    void sendhead(QTcpSocket* &sock);
-    void sendGroupMesg(QJsonValue dataVal);
+
+
+//    void sendfile(QTcpSocket* &sock);
+//    void sendhead(QTcpSocket* &sock);
+//    void sendGroupMesg(QJsonValue dataVal);
 signals:
-    void sendSock(QTcpSocket* &sock);
+//    void sendSock(QTcpSocket* &sock);
 private slots:
     void on_btn_Exit_clicked();
 
@@ -49,6 +53,16 @@ private slots:
     // 系统菜单
     void SltTrayIcoClicked(QSystemTrayIcon::ActivationReason reason);
     void SltTrayIconMenuClicked(QAction *action);
+
+    void on_btn_quit_clicked();
+
+    void on_btn_backUp_clicked();
+
+    void on_btn_backUndo_clicked();
+
+    void on_btn_Refresh_clicked();
+
+    void on_btn_Insert_clicked();
 
 private:
     Ui::MainWindow *ui;

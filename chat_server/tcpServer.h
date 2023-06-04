@@ -39,7 +39,7 @@ public:
     ~TcpMsgServer();
 
     void newConnect();
-    void sendToAll(QJsonValue);
+//    void sendToAll(QJsonValue);
 signals:
     void signalDownloadFile(const QJsonValue &json);
 
@@ -52,11 +52,13 @@ private:
 public slots:
     void SltTransFileToClient(const int &userId, const QJsonValue &json);
 
+    void SltMsgToClient(const quint8 &type, const int &receiverID, const QJsonValue &jsonVal);
+
 private slots:
     void SltNewConnection();
     void SltConnected();
     void SltDisConnected();
-    void SltMsgToClient(const quint8 &type, const int &id, const QJsonValue &json);
+
 };
 
 
@@ -70,6 +72,8 @@ public:
     void newConnect();
 
 signals:
+    void signalMsgToClient(const quint8 &, const int &, const QJsonValue &);
+    void signalRecvFinished(int id, const QJsonValue &json);
 private:
 //    QTcpServer* sockServ;
 //    QList<tcpFileSocket*> clnFileList;//与客户端通信的套接字
@@ -84,6 +88,7 @@ private slots:
     void SltDisConnected();
 public slots:
     void SltClientDownloadFile(const QJsonValue &json);
+
 };
 
 

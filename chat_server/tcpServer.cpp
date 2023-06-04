@@ -2,6 +2,8 @@
 
 #include<QJsonParseError>
 #include <QJsonObject>
+#include <QJsonValue>
+#include <QSqlQuery>
 
 #include "clientsocket.h"
 #include "database.h"
@@ -80,12 +82,12 @@ TcpMsgServer::~TcpMsgServer()
         client->closeSocket();
     }
 }
-void TcpMsgServer::sendToAll(QJsonValue dataVal)
-{
-//    foreach (tcpSocket *sock, clnMsgList) {
-//        sock->sendMessage(SendMsg,dataVal);
-//    }
-}
+//void TcpMsgServer::sendToAll(QJsonValue dataVal)
+//{
+////    foreach (tcpSocket *sock, clnMsgList) {
+////        sock->sendMessage(SendMsg,dataVal);
+////    }
+//}
 
 // 有新的客户端连接进来
 void TcpMsgServer::SltNewConnection()
@@ -144,15 +146,43 @@ void TcpMsgServer::SltDisConnected()
 /**
  * 消息转发控制
  */
-void TcpMsgServer::SltMsgToClient(const quint8 &type, const int &id, const QJsonValue &json)
+void TcpMsgServer::SltMsgToClient(const quint8 &type, const int &receiverID, const QJsonValue &jsonVal)
 {
     // 查找要发送过去的id
     for (int i = 0; i < m_clients.size(); i++) {
-        if (id == m_clients.at(i)->getUserID())
+        if (receiverID == m_clients.at(i)->getUserID())
         {
-            m_clients.at(i)->sendMessage(type, json);
+            m_clients.at(i)->sendMessage(type, jsonVal);
             return;
         }
+    }
+
+    //服务器端没有查询到该消息对应的接受者，说明该用户当前不在线，需要先把数据记录在服务器，等到用户上线后再发送
+    if(jsonVal.isObject()){
+        QJsonObject json = jsonVal.toObject();
+        int senderID = json.value("id").toInt();
+        qint64 time = json.value("time").toInt();
+        QString msg = json.value("msg").toString();
+        int tag = json.value("tag").toInt();
+        int groupID = 0;
+        if(tag == 1)
+            groupID = json.value("group").toInt();
+        qint64 fileSize = json.value("fileSize").toInt();
+
+        QSqlQuery query;
+        query.prepare("INSERT INTO UnreadMsg (senderID, receiverID, groupID, type, time, msg, tag, fileSize) "
+                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
+        query.bindValue(0, senderID);
+        query.bindValue(1, receiverID);
+        query.bindValue(2, tag == 0 ? 0 : groupID);//如果为私聊消息，该字段无效，设为0即可
+        query.bindValue(3, type);
+        query.bindValue(4, time);
+        query.bindValue(5, msg);
+        query.bindValue(6, tag);
+        query.bindValue(7, fileSize);
+
+        query.exec();
+//        qDebug() << "lastError:" << query.lastError().text();
     }
 }
 
@@ -194,6 +224,12 @@ void TcpFileServer::SltNewConnection()
 
     connect(client, &ClientFileSocket::signalConnected, this, &TcpFileServer::SltConnected);
     connect(client, &ClientFileSocket::signalDisConnected, this, &TcpFileServer::SltDisConnected);
+
+    connect(client, &ClientFileSocket::sendMessagetoClient,
+            this, &TcpFileServer::signalMsgToClient);
+
+    connect(client, &ClientFileSocket::signalDownloadFile,
+            this, &TcpFileServer::SltClientDownloadFile);
 }
 
 /**
@@ -310,26 +346,4 @@ void TcpFileServer::SltClientDownloadFile(const QJsonValue &json)
     }
 }
 
-//TcpFileServer::TcpFileServer(QObject *parent):TcpServer{parent}
-//{
-//    sockServ=new QTcpServer(this);
-//    sockServ->listen(QHostAddress::Any,9999);//文件端口
-//    connect(sockServ,&QTcpServer::newConnection,this,&TcpFileServer::newConnect);
 
-
-//}
-
-//void TcpFileServer::newConnect()
-//{
-//    QTcpSocket* sock=sockServ->nextPendingConnection();
-//    tcpFileSocket* filesock=new tcpFileSocket(this,sock);
-//    clnFileList.append(filesock);
-//    connect(filesock,&tcpFileSocket::sendFileToUSer,this,[=](int recvID){
-//        foreach (tcpFileSocket* fsock, clnFileList) {
-//            if(fsock->getID()==recvID)
-//            {
-//                filesock->sendFile();
-//            }
-//        }
-//    });
-//}

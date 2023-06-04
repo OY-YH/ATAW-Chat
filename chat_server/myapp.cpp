@@ -183,10 +183,20 @@ void MyApp::SaveConfig()
 void MyApp::createDir(QString path)
 {
     QDir dir(path);
+    qDebug() << "当前路径=" << dir.currentPath();
     if (!dir.exists()) {
-        dir.mkdir(path);
+//        dir.mkdir(path);
+        dir.mkpath(path);
+        qDebug() <<path;
+//同步文件系统缓存，以确保数据写入磁盘
 #ifdef Q_WS_QWS
         QProcess::execute("sync");
 #endif
     }
+    if (dir.exists()) {
+        qDebug() << "目录创建成功！";
+    } else {
+        qDebug() << "目录创建失败！";
+    }
+
 }
