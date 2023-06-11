@@ -45,6 +45,8 @@ public:
     // 判断是否是一个群的群主
     bool isAdmin(int id,int groupID);
 
+    // 添加群组
+    void AddGroup(const int &id, const int &userId, const QString &name);
     // 获取好友信息
     QJsonObject getFriendInfo(int id) const;
     // 获取群信息

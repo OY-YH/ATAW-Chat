@@ -35,6 +35,9 @@ signals:
 //    void stayOnTop(bool);
     void signalSendMessage(const quint8 &, const QJsonValue &);
     void updateMidBarTime(int id,qint64 time,QString msg);
+private slots:
+    void on_pushButton_4_clicked();
+
 private:
     Ui::rightw *ui;
     ChatWindow *chatWindow;

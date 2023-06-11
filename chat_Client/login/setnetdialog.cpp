@@ -9,6 +9,24 @@ setnetDialog::setnetDialog(QWidget *parent) :
     ui(new Ui::setnetDialog)
 {
     ui->setupUi(this);
+    this->setStyleSheet("border-radius:10px;");
+    QPalette palette;
+    palette.setColor(QPalette::WindowText, Qt::white);
+    ui->label_2->setPalette(palette);
+    ui->label->setPalette(palette);
+    ui->label_3->setPalette(palette);
+    ui->label_4->setPalette(palette);
+    ui->label_5->setPalette(palette);
+    ui->portLineEdit->setStyleSheet("border-radius:15px;");
+    ui->filePortEdit->setStyleSheet("border-radius:15px;");
+    //方正魏碑_GBK
+    QFont font( "TSCu_Times", 19, QFont::Normal);
+    QFont font_headline( "TSCu_Times", 30, QFont::Normal);
+    ui->label->setFont(font);
+    ui->label_2->setFont(font);
+    ui->label_3->setFont(font_headline);
+    ui->label_4->setFont(font);
+    ui->label_5->setFont(font);
 }
 
 setnetDialog::~setnetDialog()

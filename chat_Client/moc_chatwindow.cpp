@@ -169,7 +169,7 @@ int GroupList::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 namespace {
 struct qt_meta_stringdata_ChatWindow_t {
-    uint offsetsAndSizes[44];
+    uint offsetsAndSizes[46];
     char stringdata0[11];
     char stringdata1[18];
     char stringdata2[1];
@@ -192,6 +192,7 @@ struct qt_meta_stringdata_ChatWindow_t {
     char stringdata19[12];
     char stringdata20[13];
     char stringdata21[19];
+    char stringdata22[26];
 };
 #define QT_MOC_LITERAL(ofs, len) \
     uint(sizeof(qt_meta_stringdata_ChatWindow_t::offsetsAndSizes) + ofs), len 
@@ -218,7 +219,8 @@ Q_CONSTINIT static const qt_meta_stringdata_ChatWindow_t qt_meta_stringdata_Chat
         QT_MOC_LITERAL(195, 14),  // "sltFileArrived"
         QT_MOC_LITERAL(210, 11),  // "changeColor"
         QT_MOC_LITERAL(222, 12),  // "restoreColor"
-        QT_MOC_LITERAL(235, 18)   // "on_listbtn_clicked"
+        QT_MOC_LITERAL(235, 18),  // "on_listbtn_clicked"
+        QT_MOC_LITERAL(254, 25)   // "on_btn_screenshot_clicked"
     },
     "ChatWindow",
     "signalSendMessage",
@@ -241,7 +243,8 @@ Q_CONSTINIT static const qt_meta_stringdata_ChatWindow_t qt_meta_stringdata_Chat
     "sltFileArrived",
     "changeColor",
     "restoreColor",
-    "on_listbtn_clicked"
+    "on_listbtn_clicked",
+    "on_btn_screenshot_clicked"
 };
 #undef QT_MOC_LITERAL
 } // unnamed namespace
@@ -252,7 +255,7 @@ Q_CONSTINIT static const uint qt_meta_data_ChatWindow[] = {
       10,       // revision
        0,       // classname
        0,    0, // classinfo
-      12,   14, // methods
+      13,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -260,20 +263,21 @@ Q_CONSTINIT static const uint qt_meta_data_ChatWindow[] = {
        2,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    2,   86,    2, 0x06,    1 /* Public */,
-       5,    3,   91,    2, 0x06,    4 /* Public */,
+       1,    2,   92,    2, 0x06,    1 /* Public */,
+       5,    3,   97,    2, 0x06,    4 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       9,    0,   98,    2, 0x0a,    8 /* Public */,
-      10,    1,   99,    2, 0x0a,    9 /* Public */,
-      12,    0,  102,    2, 0x0a,   11 /* Public */,
-      13,    2,  103,    2, 0x0a,   12 /* Public */,
-      14,    3,  108,    2, 0x0a,   15 /* Public */,
-      15,    2,  115,    2, 0x0a,   19 /* Public */,
-      18,    1,  120,    2, 0x0a,   22 /* Public */,
-      19,    0,  123,    2, 0x0a,   24 /* Public */,
-      20,    0,  124,    2, 0x0a,   25 /* Public */,
-      21,    0,  125,    2, 0x08,   26 /* Private */,
+       9,    0,  104,    2, 0x0a,    8 /* Public */,
+      10,    1,  105,    2, 0x0a,    9 /* Public */,
+      12,    0,  108,    2, 0x0a,   11 /* Public */,
+      13,    2,  109,    2, 0x0a,   12 /* Public */,
+      14,    3,  114,    2, 0x0a,   15 /* Public */,
+      15,    2,  121,    2, 0x0a,   19 /* Public */,
+      18,    1,  126,    2, 0x0a,   22 /* Public */,
+      19,    0,  129,    2, 0x0a,   24 /* Public */,
+      20,    0,  130,    2, 0x0a,   25 /* Public */,
+      21,    0,  131,    2, 0x08,   26 /* Private */,
+      22,    0,  132,    2, 0x08,   27 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::UChar, QMetaType::QJsonValue,    3,    4,
@@ -287,6 +291,7 @@ Q_CONSTINIT static const uint qt_meta_data_ChatWindow[] = {
     QMetaType::Void, QMetaType::UChar, QMetaType::QString, QMetaType::Int,    2,    2,    2,
     QMetaType::Void, QMetaType::LongLong, QMetaType::LongLong,   16,   17,
     QMetaType::Void, QMetaType::QJsonValue,    2,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -340,6 +345,8 @@ Q_CONSTINIT const QMetaObject ChatWindow::staticMetaObject = { {
         // method 'restoreColor'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'on_listbtn_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_btn_screenshot_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -363,6 +370,7 @@ void ChatWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 9: _t->changeColor(); break;
         case 10: _t->restoreColor(); break;
         case 11: _t->on_listbtn_clicked(); break;
+        case 12: _t->on_btn_screenshot_clicked(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -414,13 +422,13 @@ int ChatWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 12)
+        if (_id < 13)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 12;
+        _id -= 13;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 12)
+        if (_id < 13)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 12;
+        _id -= 13;
     }
     return _id;
 }

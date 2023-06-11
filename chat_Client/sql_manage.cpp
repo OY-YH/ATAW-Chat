@@ -192,6 +192,31 @@ bool sql_manage::isAdmin(int id, int groupID)
     return false;
 }
 
+void sql_manage::AddGroup(const int &id, const int &userId, const QString &name)
+{
+    QString strQuery = "SELECT [id] FROM MYGROUP ";
+    strQuery.append("WHERE id=");
+    strQuery.append(QString::number(id));
+    strQuery.append(" AND userId=");
+    strQuery.append(QString::number(userId));
+
+    QSqlQuery query(strQuery, userdb);
+    if (query.next()) {
+       // 查询到有该用户，不添加
+       qDebug() << "yes" << query.value(0).toString();
+       return;
+    }
+
+    // 根据新ID重新创建用户
+    query.prepare("INSERT INTO MYGROUP (id, userId, name) "
+                  "VALUES (?, ?, ?);");
+    query.bindValue(0, id);
+    query.bindValue(1, userId);
+    query.bindValue(2, name);
+
+    query.exec();
+}
+
 QJsonObject sql_manage::getFriendInfo(int id) const
 {
     QString strQuery = "SELECT * FROM MyFriend where id = ";

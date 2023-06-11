@@ -9,7 +9,7 @@
 #include "searchbar.h"
 #include "myapp.h"
 #include "sql_manage.h"
-
+#include"CutScreen/screen.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QPushButton>
@@ -57,7 +57,7 @@ ChatWindow::ChatWindow(QWidget *parent,Cell *c) :
 
 //    connect(ui->textEdit,&MyTextEdit::mousePressed,this,&ChatWindow::changeColor);
 //    connect(ui->textEdit,&MyTextEdit::focusOut,this,&ChatWindow::restoreColor);
-
+    connect(ui->btn_emoj,&QPushButton::clicked,this,&ChatWindow::sendMsg);
     connect(ui->listbtn,&QPushButton::clicked,this,&ChatWindow::on_listbtn_clicked);
 
     connect(ui->fileButton,&QPushButton::clicked,this,&ChatWindow::sendMsg);
@@ -616,6 +616,77 @@ void ChatWindow::sendMsg()
         }else{
             QMessageBox::information(this,"警告","请等待当前图片发送完成!");
         }
+    }else if(sender()==ui->btn_emoj){
+        //qDebug()<<"dhajsd";
+        //g
+        emoj=new MyEmotionWidget;
+        emoj->show();
+        auto g=[&](){
+            qDebug()<<"dhajsd";
+            BubbleInfo *info = new BubbleInfo;
+            info->sender = Me;
+            info->myID = MyApp::m_nId;
+            info->headIcon = MyApp::m_strHeadPath + MyApp::m_strHeadFile;//我的头像
+
+            QFileInfo headFile(info->headIcon);
+            if(!headFile.exists() || MyApp::m_strHeadFile.isEmpty()){
+                info->headIcon = MyApp::m_strHeadPath + "default.png";
+            }
+            info->name = MyApp::m_strUserName;//我的名字
+            info->yourID = cell->id;
+            if(tag == 1)
+                info->groupID = cell->id;
+            info->tag = tag;
+
+            //发消息之前先处理时间
+            qint64 curTime = QDateTime::currentSecsSinceEpoch();//时间戳
+            info->time = curTime;
+            info->msgType = Picture;
+            if(!busy && !tcpFileSocket->isBusy()){
+                if(emoj->currentFileName!="")
+                    fileName =emoj->currentFileName;
+                qDebug()<<"currentfilename:"<<fileName;
+
+                QFileInfo fileInfo = QFileInfo(fileName);
+                if(fileInfo.exists()){
+                    info->fileSize = fileInfo.size();
+                    info->msg = fileName;
+                    qDebug() << fileInfo.path() << fileInfo.fileName()
+                             << QString("file size: ")+QString::number(fileInfo.size()) + "bytes"
+                             << "suffix: " + fileInfo.suffix();
+
+                    if(fileInfo.size() > (1024*1024*5)){//图片不能大于5M，否则需要通过传输文件的形式进行
+                        QMessageBox::information(this,tr("错误"),tr("图片过大！请通过发送文件的形式传输"));
+                        return;
+                    }
+
+                    if(!cell->deleted){
+                        curFileBubble = info;
+                        QString msg = QString("我:") + "[图片]";
+                        sendTimeMsg(curTime,msg);
+                        ui->msgWindow->insertBubble(info);
+                        writeMsgToDatabase(info);
+
+                        //tcp开始传输文件
+                        tcpFileSocket->sendFile(fileName,curTime,SendPicture);
+                        updateTime.restart();
+                        fileType = SendPicture;
+                    }else{
+                        info->showError = true;
+                        info->showAnimation = false;
+                        ui->msgWindow->insertBubble(info);
+                        writeMsgToDatabase(info);
+                    }
+                }
+            }else{
+                QMessageBox::information(this,"警告","请等待当前图片发送完成!");
+            }
+            //                disconnect(emoj,0,this,0);
+            //                emoj->disconnect(this);
+            //                emoj->close();
+        };
+        connect(emoj,&MyEmotionWidget::SendEmojoyMessage,this,g);
+        //delete emoj;
     }
 }
 
@@ -863,5 +934,13 @@ void ChatWindow::on_listbtn_clicked()
         ui->listbtn->setImage(ui->listbtn->MoveInIcon);
         ui->listbtn->setToolTip("关闭群员列表");
     }
+}
+
+
+void ChatWindow::on_btn_screenshot_clicked()
+{
+    screen=new Screen();
+
+    screen->show();
 }
 

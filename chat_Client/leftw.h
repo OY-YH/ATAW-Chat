@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QButtonGroup>
+#include"weather/wtheatherdlg.h"
 
 namespace Ui {
 class leftw;
@@ -17,11 +18,19 @@ public:
     ~leftw();
 
     QButtonGroup *m_btnGroup;
-protected:
-    // 重写鼠标操作以实现移动窗口
-    virtual void mousePressEvent(QMouseEvent *event) override;
+
+    void DownloadFriendHead(const int &userId);
+
+private slots:
+    void on_weatherButton_clicked();
+
 private:
     Ui::leftw *ui;
+    wtheatherDlg WDlg;
+    QPushButton *button;
+    QPushButton *favoritButton;
+    QPushButton *phoneButton;
+    QPushButton *fileButton;
 };
 
 #endif // LEFTW_H

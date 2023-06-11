@@ -1,5 +1,5 @@
 ﻿#include "bubblelist.h"
-
+#include"myapp.h"
 #include <QDebug>
 #include <QScrollBar>
 #include <QStylePainter>
@@ -8,6 +8,7 @@
 #include <QProcess>
 #include <QApplication>
 #include <QClipboard>
+#include<QDesktopServices>
 
 BubbleList::BubbleList(QWidget *parent) :
     QListWidget(parent)
@@ -201,22 +202,9 @@ void BubbleList::onSonMenuSelected(QAction *action)
 
     }else if(!action->text().compare(tr("打开图片所在文件夹")) ||
              !action->text().compare(tr("打开文件所在文件夹"))){
-        QString filepath = curBubble->msg;
 
-        /*
-        QFileInfo fileInfo(filepath);
-        qDebug() << "path:" << fileInfo.path();
-        QString path = fileInfo.path();//获取程序当前目录
-        path.replace("/","\\");//将地址中的"/"替换为"\"，因为在Windows下使用的是"\"。
-        QProcess::startDetached("explorer "+path);//打开上面获取的目录
-        */
-
-        QString path = filepath;//获取程序当前目录
-        path.replace("/","\\");//将地址中的"/"替换为"\"，因为在Windows下使用的是"\"。
-        //qDebug() << path;
-        QString cmd = QString("explorer.exe /select," + path);
-        //qDebug() << cmd;
-        QProcess::startDetached(cmd);
+        QUrl fileUrl = QUrl::fromLocalFile(MyApp::m_strRecvPath);
+        QDesktopServices::openUrl(fileUrl.adjusted(QUrl::RemoveFilename));
     }
 }
 

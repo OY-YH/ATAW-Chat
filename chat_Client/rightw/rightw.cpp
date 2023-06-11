@@ -170,3 +170,9 @@ void rightw::addNewUserToGroupList(int groupID, Cell *newUser)
         }
     }
 }
+
+void rightw::on_pushButton_4_clicked()
+{
+    exit(0);
+}
+

@@ -27,7 +27,7 @@
     <rect>
      <x>-3</x>
      <y>60</y>
-     <width>331</width>
+     <width>311</width>
      <height>771</height>
     </rect>
    </property>
@@ -35,6 +35,12 @@
     <size>
      <width>311</width>
      <height>771</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>310</width>
+     <height>770</height>
     </size>
    </property>
    <property name="styleSheet">
@@ -66,12 +72,18 @@
      <property name="spacing">
       <number>0</number>
      </property>
-     <item row="0" column="0">
+     <item row="1" column="0">
       <widget class="ListWidget" name="chatList">
        <property name="minimumSize">
         <size>
+         <width>330</width>
+         <height>700</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
          <width>300</width>
-         <height>560</height>
+         <height>16777215</height>
         </size>
        </property>
        <property name="styleSheet">
@@ -87,15 +99,15 @@
   <widget class="QLineEdit" name="searchlineEdit">
    <property name="geometry">
     <rect>
-     <x>0</x>
+     <x>60</x>
      <y>10</y>
-     <width>261</width>
+     <width>200</width>
      <height>41</height>
     </rect>
    </property>
    <property name="minimumSize">
     <size>
-     <width>261</width>
+     <width>200</width>
      <height>41</height>
     </size>
    </property>

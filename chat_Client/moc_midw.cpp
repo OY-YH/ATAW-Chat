@@ -8,6 +8,7 @@
 
 #include <memory>
 #include "midw/midw.h"
+#include <QtGui/qtextcursor.h>
 #include <QtCore/qmetatype.h>
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'midw.h' doesn't include <QObject>."
@@ -26,7 +27,7 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 namespace {
 struct qt_meta_stringdata_midw_t {
-    uint offsetsAndSizes[40];
+    uint offsetsAndSizes[46];
     char stringdata0[5];
     char stringdata1[11];
     char stringdata2[1];
@@ -36,17 +37,20 @@ struct qt_meta_stringdata_midw_t {
     char stringdata6[14];
     char stringdata7[15];
     char stringdata8[18];
-    char stringdata9[11];
-    char stringdata10[18];
-    char stringdata11[9];
-    char stringdata12[14];
-    char stringdata13[15];
-    char stringdata14[7];
-    char stringdata15[16];
-    char stringdata16[8];
-    char stringdata17[13];
-    char stringdata18[5];
-    char stringdata19[15];
+    char stringdata9[18];
+    char stringdata10[11];
+    char stringdata11[18];
+    char stringdata12[9];
+    char stringdata13[14];
+    char stringdata14[15];
+    char stringdata15[7];
+    char stringdata16[16];
+    char stringdata17[8];
+    char stringdata18[15];
+    char stringdata19[8];
+    char stringdata20[13];
+    char stringdata21[5];
+    char stringdata22[15];
 };
 #define QT_MOC_LITERAL(ofs, len) \
     uint(sizeof(qt_meta_stringdata_midw_t::offsetsAndSizes) + ofs), len 
@@ -61,17 +65,20 @@ Q_CONSTINIT static const qt_meta_stringdata_midw_t qt_meta_stringdata_midw = {
         QT_MOC_LITERAL(63, 13),  // "signalAddChat"
         QT_MOC_LITERAL(77, 14),  // "resetRightPage"
         QT_MOC_LITERAL(92, 17),  // "contactBtnClicked"
-        QT_MOC_LITERAL(110, 10),  // "updateTime"
-        QT_MOC_LITERAL(121, 17),  // "onSonMenuSelected"
-        QT_MOC_LITERAL(139, 8),  // "QAction*"
-        QT_MOC_LITERAL(148, 13),  // "sltOpenDialog"
-        QT_MOC_LITERAL(162, 14),  // "setPopMenuCell"
-        QT_MOC_LITERAL(177, 6),  // "QMenu*"
-        QT_MOC_LITERAL(184, 15),  // "sltMenuSelected"
-        QT_MOC_LITERAL(200, 7),  // "sltFind"
-        QT_MOC_LITERAL(208, 12),  // "sltAddFriend"
-        QT_MOC_LITERAL(221, 4),  // "cell"
-        QT_MOC_LITERAL(226, 14)   // "deleteChatCell"
+        QT_MOC_LITERAL(110, 17),  // "createGroupSucess"
+        QT_MOC_LITERAL(128, 10),  // "updateTime"
+        QT_MOC_LITERAL(139, 17),  // "onSonMenuSelected"
+        QT_MOC_LITERAL(157, 8),  // "QAction*"
+        QT_MOC_LITERAL(166, 13),  // "sltOpenDialog"
+        QT_MOC_LITERAL(180, 14),  // "setPopMenuCell"
+        QT_MOC_LITERAL(195, 6),  // "QMenu*"
+        QT_MOC_LITERAL(202, 15),  // "sltMenuSelected"
+        QT_MOC_LITERAL(218, 7),  // "sltFind"
+        QT_MOC_LITERAL(226, 14),  // "sltCreateGroup"
+        QT_MOC_LITERAL(241, 7),  // "jsonVal"
+        QT_MOC_LITERAL(249, 12),  // "sltAddFriend"
+        QT_MOC_LITERAL(262, 4),  // "cell"
+        QT_MOC_LITERAL(267, 14)   // "deleteChatCell"
     },
     "midw",
     "openDialog",
@@ -82,6 +89,7 @@ Q_CONSTINIT static const qt_meta_stringdata_midw_t qt_meta_stringdata_midw = {
     "signalAddChat",
     "resetRightPage",
     "contactBtnClicked",
+    "createGroupSucess",
     "updateTime",
     "onSonMenuSelected",
     "QAction*",
@@ -90,6 +98,8 @@ Q_CONSTINIT static const qt_meta_stringdata_midw_t qt_meta_stringdata_midw = {
     "QMenu*",
     "sltMenuSelected",
     "sltFind",
+    "sltCreateGroup",
+    "jsonVal",
     "sltAddFriend",
     "cell",
     "deleteChatCell"
@@ -103,30 +113,32 @@ Q_CONSTINIT static const uint qt_meta_data_midw[] = {
       10,       // revision
        0,       // classname
        0,    0, // classinfo
-      14,   14, // methods
+      16,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       6,       // signalCount
+       7,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    1,   98,    2, 0x06,    1 /* Public */,
-       4,    2,  101,    2, 0x06,    3 /* Public */,
-       5,    1,  106,    2, 0x06,    6 /* Public */,
-       6,    1,  109,    2, 0x06,    8 /* Public */,
-       7,    0,  112,    2, 0x06,   10 /* Public */,
-       8,    0,  113,    2, 0x06,   11 /* Public */,
+       1,    1,  110,    2, 0x06,    1 /* Public */,
+       4,    2,  113,    2, 0x06,    3 /* Public */,
+       5,    1,  118,    2, 0x06,    6 /* Public */,
+       6,    1,  121,    2, 0x06,    8 /* Public */,
+       7,    0,  124,    2, 0x06,   10 /* Public */,
+       8,    0,  125,    2, 0x06,   11 /* Public */,
+       9,    1,  126,    2, 0x06,   12 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       9,    3,  114,    2, 0x0a,   12 /* Public */,
-      10,    1,  121,    2, 0x0a,   16 /* Public */,
-      12,    1,  124,    2, 0x0a,   18 /* Public */,
-      13,    2,  127,    2, 0x0a,   20 /* Public */,
-      15,    1,  132,    2, 0x0a,   23 /* Public */,
-      16,    1,  135,    2, 0x0a,   25 /* Public */,
-      17,    1,  138,    2, 0x0a,   27 /* Public */,
-      19,    1,  141,    2, 0x0a,   29 /* Public */,
+      10,    3,  129,    2, 0x0a,   14 /* Public */,
+      11,    1,  136,    2, 0x0a,   18 /* Public */,
+      13,    1,  139,    2, 0x0a,   20 /* Public */,
+      14,    2,  142,    2, 0x0a,   22 /* Public */,
+      16,    1,  147,    2, 0x0a,   25 /* Public */,
+      17,    1,  150,    2, 0x0a,   27 /* Public */,
+      18,    1,  153,    2, 0x0a,   29 /* Public */,
+      20,    1,  156,    2, 0x0a,   31 /* Public */,
+      22,    1,  159,    2, 0x0a,   33 /* Public */,
 
  // signals: parameters
     QMetaType::Void, 0x80000000 | 3,    2,
@@ -135,15 +147,17 @@ Q_CONSTINIT static const uint qt_meta_data_midw[] = {
     QMetaType::Void, 0x80000000 | 3,    2,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void, QMetaType::Int,    2,
 
  // slots: parameters
     QMetaType::Void, QMetaType::Int, QMetaType::LongLong, QMetaType::QString,    2,    2,    2,
-    QMetaType::Void, 0x80000000 | 11,    2,
+    QMetaType::Void, 0x80000000 | 12,    2,
     QMetaType::Void, 0x80000000 | 3,    2,
-    QMetaType::Void, 0x80000000 | 3, 0x80000000 | 14,    2,    2,
-    QMetaType::Void, 0x80000000 | 11,    2,
+    QMetaType::Void, 0x80000000 | 3, 0x80000000 | 15,    2,    2,
+    QMetaType::Void, 0x80000000 | 12,    2,
     QMetaType::Void, QMetaType::QJsonValue,    2,
-    QMetaType::Void, 0x80000000 | 3,   18,
+    QMetaType::Void, QMetaType::QJsonValue,   19,
+    QMetaType::Void, 0x80000000 | 3,   21,
     QMetaType::Void, QMetaType::Int,    2,
 
        0        // eod
@@ -175,6 +189,9 @@ Q_CONSTINIT const QMetaObject midw::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'contactBtnClicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'createGroupSucess'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<int, std::false_type>,
         // method 'updateTime'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<int, std::false_type>,
@@ -194,6 +211,9 @@ Q_CONSTINIT const QMetaObject midw::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<QAction *, std::false_type>,
         // method 'sltFind'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QJsonValue &, std::false_type>,
+        // method 'sltCreateGroup'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<const QJsonValue &, std::false_type>,
         // method 'sltAddFriend'
@@ -218,27 +238,29 @@ void midw::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void *
         case 3: _t->signalAddChat((*reinterpret_cast< std::add_pointer_t<Cell*>>(_a[1]))); break;
         case 4: _t->resetRightPage(); break;
         case 5: _t->contactBtnClicked(); break;
-        case 6: _t->updateTime((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<qint64>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[3]))); break;
-        case 7: _t->onSonMenuSelected((*reinterpret_cast< std::add_pointer_t<QAction*>>(_a[1]))); break;
-        case 8: _t->sltOpenDialog((*reinterpret_cast< std::add_pointer_t<Cell*>>(_a[1]))); break;
-        case 9: _t->setPopMenuCell((*reinterpret_cast< std::add_pointer_t<Cell*>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QMenu*>>(_a[2]))); break;
-        case 10: _t->sltMenuSelected((*reinterpret_cast< std::add_pointer_t<QAction*>>(_a[1]))); break;
-        case 11: _t->sltFind((*reinterpret_cast< std::add_pointer_t<QJsonValue>>(_a[1]))); break;
-        case 12: _t->sltAddFriend((*reinterpret_cast< std::add_pointer_t<Cell*>>(_a[1]))); break;
-        case 13: _t->deleteChatCell((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 6: _t->createGroupSucess((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 7: _t->updateTime((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<qint64>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[3]))); break;
+        case 8: _t->onSonMenuSelected((*reinterpret_cast< std::add_pointer_t<QAction*>>(_a[1]))); break;
+        case 9: _t->sltOpenDialog((*reinterpret_cast< std::add_pointer_t<Cell*>>(_a[1]))); break;
+        case 10: _t->setPopMenuCell((*reinterpret_cast< std::add_pointer_t<Cell*>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QMenu*>>(_a[2]))); break;
+        case 11: _t->sltMenuSelected((*reinterpret_cast< std::add_pointer_t<QAction*>>(_a[1]))); break;
+        case 12: _t->sltFind((*reinterpret_cast< std::add_pointer_t<QJsonValue>>(_a[1]))); break;
+        case 13: _t->sltCreateGroup((*reinterpret_cast< std::add_pointer_t<QJsonValue>>(_a[1]))); break;
+        case 14: _t->sltAddFriend((*reinterpret_cast< std::add_pointer_t<Cell*>>(_a[1]))); break;
+        case 15: _t->deleteChatCell((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         switch (_id) {
         default: *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType(); break;
-        case 7:
+        case 8:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType(); break;
             case 0:
                 *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType::fromType< QAction* >(); break;
             }
             break;
-        case 10:
+        case 11:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType(); break;
             case 0:
@@ -290,6 +312,13 @@ void midw::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void *
                 return;
             }
         }
+        {
+            using _t = void (midw::*)(int );
+            if (_t _q_method = &midw::createGroupSucess; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+                *result = 6;
+                return;
+            }
+        }
     }
 }
 
@@ -312,13 +341,13 @@ int midw::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 14)
+        if (_id < 16)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 14;
+        _id -= 16;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 14)
+        if (_id < 16)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 14;
+        _id -= 16;
     }
     return _id;
 }
@@ -361,6 +390,13 @@ void midw::resetRightPage()
 void midw::contactBtnClicked()
 {
     QMetaObject::activate(this, &staticMetaObject, 5, nullptr);
+}
+
+// SIGNAL 6
+void midw::createGroupSucess(int _t1)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
+    QMetaObject::activate(this, &staticMetaObject, 6, _a);
 }
 QT_WARNING_POP
 QT_END_MOC_NAMESPACE

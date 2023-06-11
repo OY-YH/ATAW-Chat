@@ -11,12 +11,14 @@
 #include "ui_midw.h"
 
 #include <QJsonArray>
+#include <QMessageBox>
 
 midw::midw(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::midw)
 {
     ui->setupUi(this);
+
 
 //    ui->stackedWidget->setCurrentIndex(0);
     connect(ui->chatList,&ListWidget::popMenuToShow,
@@ -53,6 +55,17 @@ midw::midw(QWidget *parent) :
             this,&midw::signalSendMessage);
     connect(contactWidget,&ContactWidget::openDialog,this,&midw::sltOpenDialog);
     connect(contactWidget,&ContactWidget::deleteChat,this,&midw::deleteChatCell);
+
+    newGroup = new CreateGroupWnd;
+    connect(newGroup,SIGNAL(signalCreateGroup(const QJsonValue &)),
+            this,SLOT(sltCreateGroup(const QJsonValue &)));
+
+    newGroup->hide();
+//    connect(this,&midw::createGroupSucess,newGroup,[=](int groupid){
+
+//        newGroup->close();
+//        QMessageBox::information(this,"Sucess","创建群聊成功！");
+//                                                      });
 
 }
 
@@ -334,13 +347,22 @@ void midw::sltMenuSelected(QAction *action)
 
         w->exec();
     }else if(!action->text().compare(tr("创建群"))){
-//        newGroup->exec();
+        newGroup->exec();
+//        createDlg=new CreateGroupDlg();
+//        createDlg->show();
+
+
     }
 }
 
 void midw::sltFind(const QJsonValue &json)
 {
     emit signalSendMessage(FindFriend,json);
+}
+
+void midw::sltCreateGroup(const QJsonValue &jsonVal)
+{
+     emit signalSendMessage(CreateGroup,jsonVal);
 }
 
 void midw::sltAddFriend(Cell *cell)
@@ -415,6 +437,9 @@ void midw::deleteChatCell(int id)
         }
     }
 }
+
+
+
 
 
 

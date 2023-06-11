@@ -5,6 +5,8 @@
 #include "addfriendwnd.h"
 #include "contactwidget.h"
 #include "findfriendwnd.h"
+#include"creategroupwnd.h"
+//#include"creategroupdlg.h"
 
 namespace Ui {
 class midw;
@@ -36,8 +38,7 @@ signals:
     void signalAddChat(Cell*);
     void resetRightPage();
     void contactBtnClicked();
-
-private slots:
+    void createGroupSucess(int);
 
 
 public slots:
@@ -51,7 +52,7 @@ public slots:
 
     void sltFind(const QJsonValue&);
 
-//    void sltCreateGroup(const QJsonValue &jsonVal);
+    void sltCreateGroup(const QJsonValue &jsonVal);
 
     void sltAddFriend(Cell *cell);
 
@@ -59,11 +60,13 @@ public slots:
 private:
     Ui::midw *ui;
     ContactWidget *contactWidget;
-
+    CreateGroupWnd *newGroup;
     Cell *popMenuCell = nullptr;
     Cell *selectedCell = nullptr;//选中的格子，即如果右边有对话框时，对应中间的格子就是这个,初始化时没有被选中的
 
     QMenu *addMenu;
+//    CreateGroupDlg *createDlg;
+//    CreateGroupWnd *newGroup;
 };
 
 #endif // MIDW_H

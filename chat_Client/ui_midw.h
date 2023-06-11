@@ -40,8 +40,9 @@ public:
         midw->setStyleSheet(QString::fromUtf8("background-color: rgb(247, 247, 247);"));
         stackedWidget = new QStackedWidget(midw);
         stackedWidget->setObjectName("stackedWidget");
-        stackedWidget->setGeometry(QRect(-3, 60, 331, 771));
+        stackedWidget->setGeometry(QRect(-3, 60, 311, 771));
         stackedWidget->setMinimumSize(QSize(311, 771));
+        stackedWidget->setMaximumSize(QSize(310, 770));
         stackedWidget->setStyleSheet(QString::fromUtf8("background-color: rgb(226, 226, 226);"));
         chatListW = new QWidget();
         chatListW->setObjectName("chatListW");
@@ -52,11 +53,12 @@ public:
         gridLayout->setContentsMargins(0, 0, 0, 0);
         chatList = new ListWidget(chatListW);
         chatList->setObjectName("chatList");
-        chatList->setMinimumSize(QSize(300, 560));
+        chatList->setMinimumSize(QSize(330, 700));
+        chatList->setMaximumSize(QSize(300, 16777215));
         chatList->setStyleSheet(QString::fromUtf8("background-color: rgb(255, 255, 255);\n"
 ""));
 
-        gridLayout->addWidget(chatList, 0, 0, 1, 1);
+        gridLayout->addWidget(chatList, 1, 0, 1, 1);
 
         stackedWidget->addWidget(chatListW);
         blankpage = new QWidget();
@@ -64,8 +66,8 @@ public:
         stackedWidget->addWidget(blankpage);
         searchlineEdit = new QLineEdit(midw);
         searchlineEdit->setObjectName("searchlineEdit");
-        searchlineEdit->setGeometry(QRect(0, 10, 261, 41));
-        searchlineEdit->setMinimumSize(QSize(261, 41));
+        searchlineEdit->setGeometry(QRect(60, 10, 200, 41));
+        searchlineEdit->setMinimumSize(QSize(200, 41));
         QFont font;
         font.setPointSize(12);
         searchlineEdit->setFont(font);

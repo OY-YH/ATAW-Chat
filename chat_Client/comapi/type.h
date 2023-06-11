@@ -42,6 +42,7 @@ typedef enum {
 
 typedef enum {
     NewFriend,           // 新朋友
+    NewGroup,
     NewMember,           // 群组新成员
     ExitGroup,           // 群员退群
 } NoticeType;

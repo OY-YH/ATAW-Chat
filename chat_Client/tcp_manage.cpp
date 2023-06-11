@@ -1,4 +1,7 @@
 #include "tcp_manage.h"
+#include "qdebug.h"
+#include "qjsonobject.h"
+#include "qmessagebox.h"
 #include "qtcpsocket.h"
 #include "qtmetamacros.h"
 #include "sql_manage.h"
@@ -33,7 +36,7 @@ void clientSock::connectServer(const QString &host, const int &port)
 
 }
 
-void  clientSock:: sendMsg(const quint8 &type, const QJsonValue &dataVal)
+void  clientSock::  sendMsg(const quint8 &type, const QJsonValue &dataVal)
 {
 //        QString sendmsg=QString("[%1]:%2").arg(name).arg(msg);
 //        int len=tcpSocket->write(sendmsg.toUtf8());
@@ -104,11 +107,16 @@ void clientSock::recvMsg()
             break;
             case SendGroupMsg:
             {
-
+                Q_EMIT signalMessage(SendGroupMsg, dataVal);
             }
             case SendPicture:
             {
                 Q_EMIT signalMessage(SendPicture, dataVal);
+            }
+            break;
+            case CreateGroup:
+            {
+                Q_EMIT signalMessage(CreateGroup, dataVal);
             }
             break;
             case MsgReceived:
@@ -125,13 +133,12 @@ void clientSock::recvMsg()
             case Register:
             {
                 emit registerOk(dataVal);
-//                Q_EMIT signalRegisterOk(dataVal);
-//                QJsonObject obj;
-//                obj=dataVal.toObject();
-//                int id=obj.value("id").toInt();
-//                QString infor=QString("连接成功！\n 你的ID是：%1").arg(id);
-//                qDebug()<<infor;
-//                QMessageBox::information(NULL,"sucess",infor,QMessageBox::Ok);
+                QJsonObject obj;
+                obj=dataVal.toObject();
+                int id=obj.value("id").toInt();
+                QString info=QString("register success!\n your ID are :%1").arg(id);
+                qDebug()<<info;
+                QMessageBox::information(NULL,"success",info,QMessageBox::Ok);
                 break;
             }
             case UserOnLine:
@@ -160,6 +167,16 @@ void clientSock::recvMsg()
             case AddFriendRequist:
                 emit signalMessage(AddFriendRequist,dataVal);
                 break;
+            case AddGroup:
+            {
+                emit signalMessage(AddGroup, dataVal);
+            }
+            break;
+            case AddGroupRequist:
+            {
+                emit signalMessage(AddGroupRequist, dataVal);
+            }
+            break;
             case GetOfflineMsg:
             {
                 emit signalGetOfflineMsg(dataVal);
@@ -207,7 +224,12 @@ if (dataVal.isObject()) {
 
 void clientSock::setID(int newID)
 {
-ID = newID;
+    ID = newID;
+}
+
+int clientSock::GetID() const
+{
+    return  ID;
 }
 
 void clientSock::sltDisconnected()

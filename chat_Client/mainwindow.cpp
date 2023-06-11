@@ -111,6 +111,7 @@ void MainWindow::setMainSocket(clientSock *socket, clientFileSock *filesocket)
         connect(midBar,&midw::signalSendMessage,
                 m_tcp, &clientSock::sendMsg);
         connect(midBar,&midw::signalAddChat,this,&MainWindow::sltAddChat);
+//        connect(midBar,&midw::signalCreateGroup,this,&MainWindow::sltCreateGroup);
         connect(m_tcp,&clientSock::signalFindFriendReply,
                 midBar,&midw::signalFindFriendReply);
 
@@ -188,7 +189,7 @@ void MainWindow::sltTcpReply(quint8 type, QJsonValue dataVal)
     case UpdateHeadPic:
     {
         // 你的好友更新了头像
-        //ParseUpFriendHead(dataVal);
+//        ParseUFriendHead(dataVal);
     }
     break;
     case AddFriend:
@@ -198,7 +199,7 @@ void MainWindow::sltTcpReply(quint8 type, QJsonValue dataVal)
     break;
     case AddGroup:
     {
-//        parseAddGroupReply(dataVal);
+        parseAddGroupReply(dataVal);
     }
     break;
 
@@ -209,13 +210,13 @@ void MainWindow::sltTcpReply(quint8 type, QJsonValue dataVal)
     break;
     case AddGroupRequist:
     {
-//        parseAddGroupRequestConfirmed(dataVal);
+        parseAddGroupRequestConfirmed(dataVal);
     }
     break;
 
     case CreateGroup:
     {
-        //ParseCreateGroupReply(dataVal);
+        parseCreateGroupReply(dataVal);
     }
     break;
     case GetMyFriends:
@@ -250,7 +251,7 @@ void MainWindow::sltTcpReply(quint8 type, QJsonValue dataVal)
     break;
     case SendGroupMsg:
     {
-//        parseGroupMessageReply(dataVal);//收到群聊消息
+        parseGroupMessageReply(dataVal);//收到群聊消息
     }
     break;
     case SendFile:
@@ -357,6 +358,60 @@ void MainWindow::sltAddChat(Cell *cell)
     }
 }
 
+void MainWindow::sltCreateGroup()
+{
+//    QString text = CInputDialog::GetInputText(this, "我的朋友们");
+//    if (!text.isEmpty()) {
+
+//        // 构建 Json 对象
+//        QJsonObject json;
+//        json.insert("id", m_tcp->GetID());
+//        json.insert("name", text);
+
+//        m_tcp->sendMsg(CreateGroup, json);
+//    }
+}
+
+void MainWindow::ParseUpFriendHead(const QJsonValue &dataVal)
+{
+    if (!dataVal.isObject()) return;
+    QJsonObject jsonObj = dataVal.toObject();
+    int nId = jsonObj.value("id").toInt();
+    QString strHead = jsonObj.value("head").toString();
+
+    DownloadFriendHead(nId, strHead);
+}
+
+QString MainWindow::GetHeadPixmap(const QString &name) const
+{
+    if (QFile::exists(MyApp::m_strHeadPath + name)) {
+        return MyApp::m_strHeadPath + name;
+    }
+
+    return ":/resource/head/1.bmp";
+}
+
+//到服务器下载用户头像
+void MainWindow::DownloadFriendHead(const int &userId, const QString &strHead)
+{
+    if (QFile::exists(strHead)) return;
+
+    // 连接服务器，等服务器将文件下发过来
+//    ui->widgetHead->DownloadFriendHead(userId);
+//    leftBar->DownloadFriendHead(userId);
+
+    // 延迟一点发送
+//    myHelper::Sleep(100);
+
+    QJsonObject jsonReply;
+    jsonReply.insert("from", MyApp::m_nId);
+    jsonReply.insert("id",  -2);
+    jsonReply.insert("msg", strHead);
+
+    m_tcp->sendMsg(GetFile, jsonReply);
+    qDebug() << "get file" << jsonReply;
+}
+
 void MainWindow::parseAddFriendReply(QJsonValue dataVal)
 {
     //好友接受端
@@ -396,11 +451,56 @@ void MainWindow::parseAddFriendReply(QJsonValue dataVal)
     }
 }
 
+void MainWindow::parseAddGroupReply(const QJsonValue &dataVal)
+{
+    if(dataVal.isObject()){
+        QJsonObject json = dataVal.toObject();
+
+        int id = json.value("id").toInt();
+        QString name = json.value("name").toString();
+        QString head = json.value("head").toString();
+
+        int groupid = json.value("group").toInt();
+        QString groupHead = json.value("groupHead").toString();
+        QString groupName = json.value("groupName").toString();
+
+        Cell *cell = new Cell;
+        cell->id = id;
+        cell->name = name;
+        cell->iconPath = MyApp::m_strHeadPath + head;
+        QFileInfo fileInfo(cell->iconPath);
+        if(!fileInfo.exists() || head == ""){
+            //头像文件不存在，向服务器获取
+            qDebug() << cell->iconPath << "头像文件不存在，正在向服务器获取...";
+
+            QJsonObject json;
+            json.insert("tag",-2);
+            json.insert("from",MyApp::m_nId);
+            json.insert("id",-2);
+            json.insert("who",cell->id);
+            m_tcp->sendMsg(GetPicture,json);
+
+//            myHelper::Sleep(500);//等待500毫秒
+        }
+
+        cell->groupid = groupid;
+        cell->groupname_ = groupName;
+        cell->groupHead = MyApp::m_strHeadPath + groupHead;
+
+        cell->subTitle = QDateTime::currentDateTime().toString("hh:mm:ss");
+        cell->msg = QString::number(id) + "请求加入群：" + QString::number(groupid);
+        cell->type = Cell_AddGroup;
+
+        midBar->insertCell(cell);
+        midBar->switchToChatList();
+    }
+}
+
 void MainWindow::parseAddGroupRequestConfirmed(const QJsonValue &dataVal)
 {
     if(dataVal.isObject()){
         QJsonObject json = dataVal.toObject();
-        int id = json.value("id").toInt();
+        int id = json.value("id").toInt();      //groupid
         QString name = json.value("name").toString();
         QString head = json.value("head").toString();
         int adminID = json.value("adminID").toInt();
@@ -412,10 +512,10 @@ void MainWindow::parseAddGroupRequestConfirmed(const QJsonValue &dataVal)
         query.bindValue(0, id);
         query.bindValue(1, name);
         query.bindValue(2, adminID);
-//        query.bindValue(3, MyApp::m_strHeadPath + head);
-        query.bindValue(4, 0);
-        query.bindValue(5, 0);
-        query.bindValue(6, 0);
+        query.bindValue(3, MyApp::m_strHeadPath + head);
+        query.bindValue(4, 1);
+        query.bindValue(5, "");
+        query.bindValue(6, "");
 
         query.exec();
 
@@ -534,6 +634,101 @@ void MainWindow::parseFriendMessageReply(const QJsonValue &dataVal)
         }
 
         rightBar->msgReceived(cell,dataVal);
+    }
+}
+
+void MainWindow::parseGroupMessageReply(const QJsonValue &dataVal)
+{
+    if(dataVal.isObject()){
+        QJsonObject json = dataVal.toObject();
+        int groupid = json.value("group").toInt();
+        QString groupName = json.value("groupName").toString();
+        int type = json.value("type").toInt();
+
+        //聊天列表是否存在该群的聊天记录
+        Cell *cell = midBar->isIDExist(groupid);
+        if(cell == nullptr){//证明聊天列表中没有和该用户的聊天记录
+            cell = new Cell;
+            cell->id = groupid;
+            cell->name = groupName;
+
+            QJsonObject json = sql_manage::Instance()->getGroupInfo(groupid);
+            cell->name = json.value("name").toString();
+            cell->iconPath = json.value("head").toString();
+            cell->type = Cell_GroupChat;
+
+            midBar->insertCell(cell);
+            midBar->switchToChatList();
+        }
+
+        rightBar->msgReceived(cell,dataVal);
+
+        if(type == Notice){
+            int noticeType = json.value("noticeType").toInt();
+            if(noticeType == NewMember){
+                //刷新聊天窗口的群成员列表
+                Cell* newUser = new Cell;
+                newUser->type = Cell_FriendChat;
+                newUser->id = json.value("id").toInt();
+                newUser->name = json.value("name").toString();
+                newUser->iconPath = MyApp::m_strHeadPath +
+                                    json.value("head").toString();
+                newUser->status = OnLine;
+                rightBar->addNewUserToGroupList(groupid,newUser);
+            }
+        }
+    }
+}
+
+void MainWindow::parseCreateGroupReply(const QJsonValue &dataVal)
+{
+    if (dataVal.isObject()) {
+        QJsonObject dataObj = dataVal.toObject();
+
+        int nId = dataObj.value("id").toInt();  //groupid
+        // 未查询到该用户
+        if (-1 == nId) {
+            QMessageBox::information(this, "CreateGroup","该群组已经添加!");
+            return;
+        }
+
+        Cell *cell = new Cell;
+        cell->groupName = QString(tr("我的群组"));
+        cell->iconPath  = GetHeadPixmap(dataObj.value("head").toString());
+        cell->type      = Cell_GroupChat;
+        cell->name      = dataObj.value("name").toString();
+        cell->subTitle  = QString("我的群，我做主...");
+        cell->id        = nId;
+        cell->status    = OnLine;
+
+        midBar->insertCell(cell);
+        midBar->switchToChatList();
+
+        QJsonObject jsonObj;
+        jsonObj.insert("type",Notice);
+        jsonObj.insert("noticeType",NewGroup);
+        jsonObj.insert("id",nId);
+        jsonObj.insert("msg","你success create a group!");
+
+        rightBar->allowSendMsg(nId);
+        rightBar->msgReceived(cell,jsonObj);
+        onleftBtnClicked(0);
+
+        Cell* c = new Cell;
+        c->type = Cell_GroupContact;
+        c->groupName = "我的群组";
+        c->id = cell->id;
+        c->name = cell->name;
+        c->iconPath = cell->iconPath;
+        c->isClicked = false;
+        c->status = OnLine;
+
+        midBar->addCellToContact(c);
+
+        // 更新至数据库
+        sql_manage::Instance()->AddGroup(cell->id, MyApp::m_nId, cell->name);
+
+
     }
 }
 

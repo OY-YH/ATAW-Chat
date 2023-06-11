@@ -5,7 +5,8 @@
 #include "listwidget.h"
 #include "inputwidget.h"
 #include "tcp_manage.h"
-
+#include "myemotionwidget.h"
+#include"CutScreen/screen.h"
 #include <QWidget>
 #include <QLabel>
 #include <QTextEdit>
@@ -109,8 +110,13 @@ public slots:
 private slots:
     void on_listbtn_clicked();
 
+    void on_btn_screenshot_clicked();
+
+
 private:
     Ui::ChatWindow *ui;
+    Screen *screen;
+    MyEmotionWidget *emoj;
 };
 
 #endif // CHATWINDOW_H

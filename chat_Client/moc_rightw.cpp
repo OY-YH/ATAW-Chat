@@ -27,7 +27,7 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 namespace {
 struct qt_meta_stringdata_rightw_t {
-    uint offsetsAndSizes[14];
+    uint offsetsAndSizes[16];
     char stringdata0[7];
     char stringdata1[18];
     char stringdata2[1];
@@ -35,6 +35,7 @@ struct qt_meta_stringdata_rightw_t {
     char stringdata4[3];
     char stringdata5[5];
     char stringdata6[4];
+    char stringdata7[24];
 };
 #define QT_MOC_LITERAL(ofs, len) \
     uint(sizeof(qt_meta_stringdata_rightw_t::offsetsAndSizes) + ofs), len 
@@ -46,7 +47,8 @@ Q_CONSTINIT static const qt_meta_stringdata_rightw_t qt_meta_stringdata_rightw =
         QT_MOC_LITERAL(26, 16),  // "updateMidBarTime"
         QT_MOC_LITERAL(43, 2),  // "id"
         QT_MOC_LITERAL(46, 4),  // "time"
-        QT_MOC_LITERAL(51, 3)   // "msg"
+        QT_MOC_LITERAL(51, 3),  // "msg"
+        QT_MOC_LITERAL(55, 23)   // "on_pushButton_4_clicked"
     },
     "rightw",
     "signalSendMessage",
@@ -54,7 +56,8 @@ Q_CONSTINIT static const qt_meta_stringdata_rightw_t qt_meta_stringdata_rightw =
     "updateMidBarTime",
     "id",
     "time",
-    "msg"
+    "msg",
+    "on_pushButton_4_clicked"
 };
 #undef QT_MOC_LITERAL
 } // unnamed namespace
@@ -65,7 +68,7 @@ Q_CONSTINIT static const uint qt_meta_data_rightw[] = {
       10,       // revision
        0,       // classname
        0,    0, // classinfo
-       2,   14, // methods
+       3,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -73,12 +76,18 @@ Q_CONSTINIT static const uint qt_meta_data_rightw[] = {
        2,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    2,   26,    2, 0x06,    1 /* Public */,
-       3,    3,   31,    2, 0x06,    4 /* Public */,
+       1,    2,   32,    2, 0x06,    1 /* Public */,
+       3,    3,   37,    2, 0x06,    4 /* Public */,
+
+ // slots: name, argc, parameters, tag, flags, initial metatype offsets
+       7,    0,   44,    2, 0x08,    8 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::UChar, QMetaType::QJsonValue,    2,    2,
     QMetaType::Void, QMetaType::Int, QMetaType::LongLong, QMetaType::QString,    4,    5,    6,
+
+ // slots: parameters
+    QMetaType::Void,
 
        0        // eod
 };
@@ -100,7 +109,9 @@ Q_CONSTINIT const QMetaObject rightw::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<int, std::false_type>,
         QtPrivate::TypeAndForceComplete<qint64, std::false_type>,
-        QtPrivate::TypeAndForceComplete<QString, std::false_type>
+        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
+        // method 'on_pushButton_4_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
 } };
@@ -113,6 +124,7 @@ void rightw::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         switch (_id) {
         case 0: _t->signalSendMessage((*reinterpret_cast< std::add_pointer_t<quint8>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QJsonValue>>(_a[2]))); break;
         case 1: _t->updateMidBarTime((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<qint64>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[3]))); break;
+        case 2: _t->on_pushButton_4_clicked(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -153,13 +165,13 @@ int rightw::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 2)
+        if (_id < 3)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 2;
+        _id -= 3;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 2)
+        if (_id < 3)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 2;
+        _id -= 3;
     }
     return _id;
 }
