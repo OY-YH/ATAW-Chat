@@ -114,21 +114,26 @@ void ClientSocket::readMsg()
                 parseAddFriendReply(data);
             }
             break;
-//            case AddGroup:
-//            {
-//                ParseAddGroup(dataVal);
-//            }
-//            break;
-//            case CreateGroup:
-//            {
-//                ParseCreateGroup(dataVal);
-//            }
-//            break;
+            case AddGroup:
+            {
+                parseAddGroup(data);
+            }
+            break;
+            case AddGroupRequist:
+            {
+                parseAddGroupReply(data);
+            }
+            break;
+            case CreateGroup:
+            {
+                parseCreateGroup(data);
+            }
+            break;
             case GetMyFriends:
             {
                 ParseGetMyFriend(data);
             }
-//            break;
+            break;
 //            case GetMyGroups:
 //            {
 //                ParseGetMyGroups(dataVal);
@@ -224,12 +229,18 @@ void ClientSocket::ParseGroupMessages(const QByteArray &reply)
             int nType = jsonObj.value("type").toInt();
             QJsonValue dataVal = jsonObj.value("data");
 
+            //通知客户端，该消息已经被服务器收到，客户端可以消除动画
+            Q_EMIT sendMessage(MsgReceived,dataVal);
+
             QJsonObject dataObj = dataVal.toObject();
             // 转发的群组id
             int nGroupId = dataObj.value("to").toInt();
             QString strMsg = dataObj.value("msg").toString();
+            QString groupHead = Database::Instance()->getGroupInfo(nGroupId).value("head").toString();
+
             // 查询该群组下面的用户，一一转发消息
             QString name = Database::Instance()->getUserName(m_id);
+            qint64 time = dataObj.value("time").toInt();
 
             // 查询该群组里面的在线好友
             QJsonArray jsonArr = Database::Instance()->getGroupUsers(nGroupId);
@@ -244,13 +255,15 @@ void ClientSocket::ParseGroupMessages(const QByteArray &reply)
                     // 重组消息
                     QJsonObject jsonMsg;
                     jsonMsg.insert("group", nGroupId);
+                    jsonMsg.insert("groupHead",groupHead);
                     jsonMsg.insert("id", m_id);
-                    jsonMsg.insert("name", name);
+                    jsonMsg.insert("time",time);
+                    jsonMsg.insert("name", name);//发送该条群聊消息的人的名字
                     jsonMsg.insert("to", nUserId);
                     jsonMsg.insert("msg", strMsg);
                     jsonMsg.insert("head", Database::Instance()->getUserHead(m_id));
 
-                    emit sendMessagetoClient(nType, nUserId, jsonMsg);
+                    emit sendMessagetoClient(quint8(nType), nUserId, jsonMsg);
                 }
             }
         }
@@ -271,6 +284,8 @@ void ClientSocket::sendMessage(const quint8 &type, const QJsonValue &jsonVal)
     QJsonDocument document;
     document.setObject(jsonObj);
     m_tcpSocket->write(document.toJson(QJsonDocument::Indented));
+    qDebug() << "-> " << "服务器向用户" << m_id << "发送一条消息，"
+             << "消息内容为:" << jsonObj ;
 }
 
 void ClientSocket::sltConnected()
@@ -503,6 +518,111 @@ void ClientSocket::parseAddFriendReply(const QJsonValue &dataVal)
         //通知用户
         QJsonObject jsonObj = Database::Instance()->getUserInfo(userID2);
         Q_EMIT sendMessagetoClient(AddFriendRequist, userID1, jsonObj);
+    }
+}
+
+void ClientSocket::parseAddGroup(const QJsonValue &dataVal)
+{
+    // data 的 value 是对象
+    if (dataVal.isObject()) {
+        QJsonObject json = dataVal.toObject();
+        int id = json.value("id").toInt();      //groupid
+        int senderid = json.value("sender").toInt();
+
+        QJsonObject jsonObj = Database::Instance()->getUserInfo(senderid);
+        QJsonObject groupInfo = Database::Instance()->getGroupInfo(id);
+        int adminID = groupInfo.value("adminID").toInt();
+        QString groupName = groupInfo.value("name").toString();
+        QString groupHead = groupInfo.value("head").toString();
+
+        if(adminID != -1){
+            jsonObj.insert("msg","add group request");
+            jsonObj.insert("time",QDateTime::currentSecsSinceEpoch());
+            jsonObj.insert("group",id);
+            jsonObj.insert("groupName",groupName);
+            jsonObj.insert("groupHead",groupHead);
+            jsonObj.insert("tag",1);
+
+            // 发送查询结果至客户端
+            // 通知该群的群主处理该条请求消息
+            Q_EMIT sendMessagetoClient(AddGroup, adminID, jsonObj);
+        }
+    }
+}
+
+void ClientSocket::parseAddGroupReply(const QJsonValue &dataVal)
+{
+    if(dataVal.isObject()){
+        QJsonObject json = dataVal.toObject();
+        int userID = json.value("userID").toInt();//发送请求者
+        int groupID = json.value("groupID").toInt();
+        QString time = json.value("time").toString();
+        //先更新数据库，再通知发送请求的用户
+
+        QSqlQuery query;
+
+        query.prepare("INSERT INTO GroupUser (groupID, userID, joinTime) "
+                      "VALUES (?, ?, ?);");
+        query.bindValue(0, groupID);
+        query.bindValue(1, userID);
+        query.bindValue(2, time);
+
+        query.exec();
+
+        //通知发送请求的用户
+        QJsonObject jsonObj = Database::Instance()->getGroupInfo(groupID);
+        Q_EMIT sendMessagetoClient(AddGroupRequist, userID, jsonObj);
+
+        //----------------------------------------------
+
+        //通知该群的用户，更新聊天窗口中的群列表信息，并且显示该用户已经加入群
+        QJsonObject newUserInfo = Database::Instance()->getUserInfo(userID);
+        QString name = newUserInfo.value("name").toString();
+        QString head = newUserInfo.value("head").toString();
+
+        QJsonObject groupInfo = Database::Instance()->getGroupInfo(groupID);
+        QString groupName = groupInfo.value("name").toString();
+        int adminID = groupInfo.value("adminID").toInt();
+
+        QJsonArray jsonArr = Database::Instance()->getGroupUsers(groupID);
+        for (int i = 0; i < jsonArr.size(); i++) {
+            QJsonObject json = jsonArr.at(i).toObject();
+            int id = json.value("id").toInt();
+
+            if(id == userID || id == adminID)//不通知请求发送者和群主，因为他们已经处理了该条消息
+                continue;
+
+            // 重组消息
+            QJsonObject jsonMsg;
+            jsonMsg.insert("group", groupID);
+            jsonMsg.insert("groupName",groupName);
+            jsonMsg.insert("id", userID);//新入群用户的id
+            jsonMsg.insert("name", name);//新入群用户的名字
+            jsonMsg.insert("head",head);
+            jsonMsg.insert("time",time);
+            jsonMsg.insert("to", id);
+            jsonMsg.insert("msg", QString::number(userID) + "已加入该群");
+            jsonMsg.insert("tag",1);
+            jsonMsg.insert("type",Notice);
+            jsonMsg.insert("noticeType",NewMember);
+
+            Q_EMIT sendMessagetoClient(SendGroupMsg, id, jsonMsg);
+        }
+    }
+}
+
+void ClientSocket::parseCreateGroup(const QJsonValue &dataVal)
+{
+    // data 的 value 是对象
+    if (dataVal.isObject()) {
+        QJsonObject dataObj = dataVal.toObject();
+        QString name = dataObj.value("name").toString();
+        int adminID = dataObj.value("adminID").toInt();
+        qint64 time = dataObj.value("time").toInt();
+
+        QJsonObject json = Database::Instance()->createGroup(adminID,name,time);
+        // 发送查询结果至客户端
+        sendMessage(CreateGroup, json);
     }
 }
 

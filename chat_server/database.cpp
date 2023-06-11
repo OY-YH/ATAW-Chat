@@ -461,82 +461,148 @@ QJsonObject Database::addGroup(const int &userId, const QString &name)
 
 QJsonObject Database::createGroup(const int &adminID, const QString &name, qint64 time)
 {
-    QString strQuery = "SELECT [id],[groupId],[head] FROM GroupInfo ";
-    strQuery.append("WHERE name='");
-    strQuery.append(name);
-    strQuery.append("' AND userId=");
-    strQuery.append(QString::number(adminID));
+//    QString strQuery = "SELECT [id],[groupId],[head] FROM GroupInfo ";
 
-    int nIndex = -1;
-    int nGroupId = -1;
-    QString strHead = "1.bmp";
+//    strQuery.append("WHERE name='");
+//    strQuery.append(name);
+//    strQuery.append("' AND userId=");
+//    strQuery.append(QString::number(adminID));
 
-    QSqlQuery query(strQuery);
+//    int nIndex = -1;
+//    int nGroupId = -1;
+//    QString strHead = "1.bmp";
+
+//    QSqlQuery query(strQuery);
     // 查询到有该用户组
-    if (query.next()) {
-        nIndex   = query.value("id").toInt();
-        nGroupId = query.value("groupId").toInt();
-        strHead  = query.value("head").toString();
-    }
-    else {
-        // 查询数据库
-        query = QSqlQuery("SELECT [id] FROM GroupInfo ORDER BY id DESC;");
-        nIndex = 0;
-        // 查询最高ID
-        if (query.next()) {
-            nIndex = query.value("id").toInt();
-        }
+//    if (query.next()) {
+//        nIndex   = query.value("id").toInt();
+//        nGroupId = query.value("groupId").toInt();
+//        strHead  = query.value("head").toString();
+//    }
+//    else {
+//        // 查询数据库
+//        query = QSqlQuery("SELECT [id] FROM GroupInfo ORDER BY id DESC;");
+//        nIndex = 0;
+//        // 查询最高ID
+//        if (query.next()) {
+//            nIndex = query.value("id").toInt();
+//        }
 
         // 再查询该ID下面的群组
-        nGroupId = 0;
-        strQuery = QString("SELECT [groupId] FROM GroupInfo WHERE userId=");
-        strQuery.append(QString::number(adminID));
-        strQuery.append(" ORDER BY groupId DESC");
-        query = QSqlQuery(strQuery);
-        // 查询最高ID
-        if (query.next()) {
-            nGroupId = query.value("groupId").toInt();
-        }
+//        nGroupId = 0;
+//        strQuery = QString("SELECT [groupId] FROM GroupInfo WHERE userId=");
+//        strQuery.append(QString::number(adminID));
+//        strQuery.append(" ORDER BY groupId DESC");
+//        query = QSqlQuery(strQuery);
+//        // 查询最高ID
+//        if (query.next()) {
+//            nGroupId = query.value("groupId").toInt();
+//        }
 
-        nIndex   += 1;
-        nGroupId += 1;
+//        nIndex   += 1;
+//        nGroupId += 1;
 
-        // 根据新ID重新创建用户
-        query.prepare("INSERT INTO GroupInfo (id, groupId, name, head, userId, identity) "
-                      "VALUES (?, ?, ?, ?, ?, ?);");
-        query.bindValue(0, nIndex);
-        query.bindValue(1, nGroupId);
-        query.bindValue(2, name);
-        query.bindValue(3, "1.bmp");
-        query.bindValue(4, adminID);
-        query.bindValue(5, 1);
+//        // 根据新ID重新创建用户
+//        query.prepare("INSERT INTO GroupInfo (id, groupId, name, head, userId, identity) "
+//                      "VALUES (?, ?, ?, ?, ?, ?);");
+//        query.bindValue(0, nIndex);
+//        query.bindValue(1, nGroupId);
+//        query.bindValue(2, name);
+//        query.bindValue(3, "1.bmp");
+//        query.bindValue(4, adminID);
+//        query.bindValue(5, 1);
 
-        query.exec();
+//        query.exec();
+//    }
+
+//    // 构建 Json 对象
+//    QJsonObject json;
+//    json.insert("id",  nGroupId);
+//    json.insert("name", name);
+//    json.insert("head", strHead);
+
+//    return json;
+
+    QString strQuery = "SELECT * FROM GroupInfo";
+    strQuery.append(" order by id desc");
+
+    int id=0;
+    QSqlQuery query(strQuery);
+    if (query.next()) {
+        id = query.value(0).toInt();
+        id++;//分配给该注册用户的id
     }
 
-    // 构建 Json 对象
+    QString head = QString::number(id) + ".png";
+
+    // 根据新ID重新创建用户
+    query.prepare("INSERT INTO GROUPINFO (id, name, head, adminID, memberCnt,createTime) "
+                  "VALUES (?, ?, ?, ?, ?, ?);");
+    query.bindValue(0, id);
+    query.bindValue(1, name);
+    query.bindValue(2, head);
+    query.bindValue(3, adminID);
+    query.bindValue(4, 1);
+    query.bindValue(5, QDateTime::fromSecsSinceEpoch(time).toString("yyyy-MM-dd  hh:mm:ss"));
+
+    query.exec();
+
+
+    //注意，还需要向 群-用户 关系表中插入一条数据
+    QSqlQuery query2;
+    query2.prepare("INSERT INTO GroupUser (groupID, userID, joinTime) "
+                   "VALUES (?, ?, ?);");
+    query2.bindValue(0, id);
+    query2.bindValue(1, adminID);
+    query2.bindValue(2, QDateTime::fromSecsSinceEpoch(time).toString("yyyy-MM-dd  hh:mm:ss"));
+    query2.exec();
+
     QJsonObject json;
-    json.insert("id",  nGroupId);
-    json.insert("name", name);
-    json.insert("head", strHead);
+    json.insert("group",id);
+    json.insert("admin",adminID);
+    json.insert("name",name);
 
     return json;
 }
 
 QJsonArray Database::getGroupUsers(const int &groupId)
 {
-    QString strQuery = ("SELECT [id],[name] FROM UserInfo WHERE ");
-    strQuery.append(" id=(SELECT [id] FROM GroupInfo WHERE groupId=");
-    strQuery.append(QString::number(groupId));
-    strQuery.append(") AND status=");
-    strQuery.append(QString::number(OffLine));
+//    QString strQuery = ("SELECT [id],[name] FROM UserInfo WHERE ");
+//    strQuery.append(" id=(SELECT [id] FROM GroupInfo WHERE groupId=");
+//    strQuery.append(QString::number(groupId));
+//    strQuery.append(") AND status=");
+//    strQuery.append(QString::number(OffLine));
 
-    strQuery = "SELECT [userId] FROM GroupInfo WHERE groupId=";
+//    strQuery = "SELECT [userId] FROM GroupInfo WHERE groupId=";
+//    strQuery.append(QString::number(groupId));
+
+//    QJsonArray jsonArr;
+//    QSqlQuery query(strQuery);
+//    jsonArr.append(groupId);
+//    // 查询
+//    while (query.next()) {
+//        int nId = query.value(0).toInt();
+//        strQuery = "SELECT [name],[head],[status] FROM UserInfo WHERE id=";
+//        strQuery.append(QString::number(nId));
+
+//        QSqlQuery queryUser(strQuery);
+//        if (queryUser.next()) {
+//            QJsonObject jsonObj;
+//            jsonObj.insert("id", nId);
+//            jsonObj.insert("name", queryUser.value(0).toString());
+//            jsonObj.insert("head", queryUser.value(1).toString());
+//            jsonObj.insert("status", queryUser.value(2).toInt());
+//            jsonArr.append(jsonObj);
+//        }
+//    }
+
+//    return jsonArr;
+
+    QString strQuery = ("SELECT [userID] FROM GroupUser WHERE groupID=");
     strQuery.append(QString::number(groupId));
 
     QJsonArray jsonArr;
     QSqlQuery query(strQuery);
-    jsonArr.append(groupId);
     // 查询
     while (query.next()) {
         int nId = query.value(0).toInt();
@@ -546,6 +612,7 @@ QJsonArray Database::getGroupUsers(const int &groupId)
         QSqlQuery queryUser(strQuery);
         if (queryUser.next()) {
             QJsonObject jsonObj;
+            jsonObj.insert("groupid",groupId);
             jsonObj.insert("id", nId);
             jsonObj.insert("name", queryUser.value(0).toString());
             jsonObj.insert("head", queryUser.value(1).toString());
@@ -625,7 +692,7 @@ QJsonObject Database::getUserInfo(const int &id) const
         jsonObj.insert("name", query.value("name").toString());
         jsonObj.insert("head", query.value("head").toString());
         jsonObj.insert("status", query.value("status").toInt());
-        jsonObj.insert("groupId", query.value("status").toInt());
+//        jsonObj.insert("groupId", query.value("group").toInt());
         jsonObj.insert("lasttime", query.value("lasttime").toString());
         // 结果代码
         nCode = 0;
@@ -638,7 +705,29 @@ QJsonObject Database::getUserInfo(const int &id) const
 
 QJsonObject Database::getGroupInfo(const int &id) const
 {
+    QString strQuery = "SELECT * FROM GroupInfo ";
+    strQuery.append("WHERE id=");
+    strQuery.append(QString::number(id));
 
+    QJsonObject jsonObj;
+    int nCode = -1;
+    // 查询数据库
+    QSqlQuery query(strQuery);
+    // 构建用户的所有信息,不包括密码
+    if (query.next()) {
+        jsonObj.insert("id", query.value("id").toInt());
+        jsonObj.insert("name", query.value("name").toString());
+        jsonObj.insert("head", query.value("head").toString());
+        jsonObj.insert("adminID", query.value("adminID").toInt());
+        jsonObj.insert("memberCnt", query.value("memberCnt").toInt());
+        jsonObj.insert("createTime", query.value("createTime").toString());
+        // 结果代码
+        nCode = 0;
+    }
+
+    jsonObj.insert("code", nCode);
+
+    return jsonObj;
 }
 
 QJsonArray Database::getOfflineMsg(int id)

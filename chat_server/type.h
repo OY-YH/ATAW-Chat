@@ -10,6 +10,12 @@ typedef enum {
 } MessageType;
 
 typedef enum {
+    NewFriend,           // 新朋友
+    NewMember,           // 群组新成员
+    ExitGroup,           // 群员退群
+} NoticeType;
+
+typedef enum {
     Unknow,
     Register            = 0x10,     // 用户注册
     Login,                          // 用户登录

@@ -64,6 +64,9 @@ private:
     void ParseAddFriend(const QJsonValue &dataVal);
     void parseAddFriendReply(const QJsonValue &dataVal);
 
+    void parseAddGroup(const QJsonValue &dataVal);
+    void parseAddGroupReply(const QJsonValue &dataVal);
+    void parseCreateGroup(const QJsonValue &dataVal);
     void parseGetOfflineMsg(const QJsonValue &dataVal);
 
 private:
